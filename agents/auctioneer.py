@@ -1,15 +1,29 @@
 from pubsub import pub
+import time
+import threading as threading
+
+
+def get_time():
+    return int(round(time.time() * 1000))
 
 
 # TODO: consider also this class as a thread
 class Auctioneer:
+
     """ Abstract Auctioneer implementation """
 
-    def __init__(self, topic):
+    def __init__(self, time_limit):
         super(Auctioneer, self).__init__()
-        self.topic = topic
+        # message data
         self.task = None
+        self.topic = None
+
+        # auction data
         self.bids = []
+        self.lock = threading.Lock()
+        self.time_limit = time_limit
+        self.auction_started_time = None
+        self.auction_opened = False
 
     def compute_winner(self):
 
@@ -25,7 +39,8 @@ class Auctioneer:
     def reset_bids(self):
         self.bids = []
 
-    def trigger_task(self, task):
+    def trigger_task(self, topic, task):
+        self.topic = topic
         self.task = task
         self.announce_task()
 
@@ -35,7 +50,19 @@ class Auctioneer:
 
         """ callback method used by agents for submitting a bid for claiming a specific task """
 
-        self.bids.append((agent_id, value))
+        self.lock.acquire()
+        elapsed_time = get_time() - self.auction_started_time
+
+        # check whether enough time is passed
+        if self.auction_opened and elapsed_time <= self.time_limit:
+            # accept the bid
+            self.bids.append((agent_id, value))
+        elif self.auction_opened and elapsed_time > self.time_limit:
+            # TODO: close the auction
+            self.auction_opened = False
+
+        # release the lock on this method
+        self.lock.release()
 
     def acknowledge(self):
 
@@ -50,6 +77,7 @@ class Auctioneer:
         """ publish a TASK ANNOUNCEMENT message on the specific topic
             starting the Auction for the allocation of the task """
 
+        self.auction_opened = True
         pass
 
     def close_auction(self):

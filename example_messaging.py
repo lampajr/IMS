@@ -29,3 +29,4 @@ def print_hello():
 
 
 pub.sendMessage(topic, arg1=12, arg2=an_obj, arg3=print_hello)
+pub.sendMessage(topic, arg1=22212, arg2=an_obj, arg3=print_hello)

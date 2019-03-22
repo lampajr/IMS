@@ -14,7 +14,7 @@ class Auctioneer:
 
     """ Abstract Auctioneer implementation """
 
-    def __init__(self, time_limit):
+    def __init__(self, time_limit, contract_limit):
         super(Auctioneer, self).__init__()
         # message data
         self.task = None
@@ -22,9 +22,11 @@ class Auctioneer:
 
         # auction data
         self.auction_id = None
+        self.last_renewal = None
         self.bids = []
         self.lock = threading.Lock()
         self.time_limit = time_limit
+        self.contract_limit = contract_limit
         self.auction_started_time = None
         self.auction_opened = False
         self.winner = None
@@ -74,7 +76,14 @@ class Auctioneer:
             of the contract.
             note: this function needs to be passed in the renewal message """
 
-        pass
+        elapsed_time = get_time() - self.last_renewal
+        if elapsed_time > self.contract_limit and not self.task.is_terminated():
+            # resetting all the data
+            # reassign the task
+            pass
+        elif self.task.is_terminated():
+            # terminate the execution
+            pass
 
     def announce_task(self):
 
@@ -110,4 +119,5 @@ class Auctioneer:
         renewal_message = RenewalMessage(ack_callback=self.acknowledge(),
                                          auction_id=self.auction_id,
                                          winner_id=self.winner)
+        self.last_renewal = get_time()
         pub.sendMessage(self.topic, arg1=renewal_message)

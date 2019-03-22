@@ -2,6 +2,8 @@ from pubsub import pub
 import time
 import threading as threading
 
+from messages.message import *
+
 
 def get_time():
     return int(round(time.time() * 1000))
@@ -19,11 +21,13 @@ class Auctioneer:
         self.topic = None
 
         # auction data
+        self.auction_id = None
         self.bids = []
         self.lock = threading.Lock()
         self.time_limit = time_limit
         self.auction_started_time = None
         self.auction_opened = False
+        self.winner = None
 
     def compute_winner(self):
 
@@ -42,6 +46,7 @@ class Auctioneer:
     def trigger_task(self, topic, task):
         self.topic = topic
         self.task = task
+        self.auction_id = task.get_id()
         self.announce_task()
 
     ###### PUBLISH/SUBSCRIBER COMMUNICATION MODEL ######
@@ -58,8 +63,7 @@ class Auctioneer:
             # accept the bid
             self.bids.append((agent_id, value))
         elif self.auction_opened and elapsed_time > self.time_limit:
-            # TODO: close the auction
-            self.auction_opened = False
+            self.close_auction()
 
         # release the lock on this method
         self.lock.release()
@@ -78,6 +82,10 @@ class Auctioneer:
             starting the Auction for the allocation of the task """
 
         self.auction_opened = True
+
+        announcement_message = AnnouncementMessage(auction_id=self.auction_id,
+                                                   bid_callback=self.bid)
+        pub.sendMessage(self.topic, arg1=announcement_message)
         pass
 
     def close_auction(self):
@@ -86,11 +94,20 @@ class Auctioneer:
             it encapsulate the id of the winner agent such that it will
             recognize the fact that it has to perform that task """
 
-        pass
+        self.auction_opened = False
+
+        self.winner = self.compute_winner()
+        close_message = CloseMessage(auction_id=self.auction_id,
+                                     task=self.task,
+                                     winner_id=self.winner)
+        pub.sendMessage(self.topic, arg1=close_message)
 
     def send_renewal(self):
 
         """ send a RENEWAL message on the specific topic,
             it is addressed to the previous winner """
 
-        pass
+        renewal_message = RenewalMessage(ack_callback=self.acknowledge(),
+                                         auction_id=self.auction_id,
+                                         winner_id=self.winner)
+        pub.sendMessage(self.topic, arg1=renewal_message)

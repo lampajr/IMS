@@ -10,26 +10,26 @@ class MessageType(Enum):
     ACKNOWLEDGEMENT = 4
 
 
-class Message(ABC):
+class GenericMessage(ABC):
 
     """ generic message exchanged among agents """
 
     def __init__(self, auction_id, msg_type):
-        super(Message, self).__init__()
+        super(GenericMessage, self).__init__()
         self.msg_type = msg_type
         self.auction_id = auction_id
 
 
-class Announcement(Message):
+class AnnouncementMessage(GenericMessage):
 
     """ Task Announcement message """
 
     def __init__(self, auction_id, bid_callback):
-        super(Announcement, self).__init__(auction_id, MessageType.ANNOUNCEMENT)
+        super(AnnouncementMessage, self).__init__(auction_id, MessageType.ANNOUNCEMENT)
         self.bid_callback = bid_callback
 
 
-class RenewalMessage(Message):
+class RenewalMessage(GenericMessage):
 
     """ Renewal message sent by auctioneer toward the winner agent """
 
@@ -39,7 +39,7 @@ class RenewalMessage(Message):
         self.ack_callback = ack_callback
 
 
-class CloseMessage(Message):
+class CloseMessage(GenericMessage):
 
     """ Close message, sent by the auctioneer towards all other agents """
 
@@ -49,15 +49,13 @@ class CloseMessage(Message):
         self.task = task
 
 
-# TODO: non penso sia necessario, usare metodi callback
-class AcknowledgementMessage(Message):
+class AcknowledgementMessage(GenericMessage):
 
     def __init__(self, auction_id):
         super(AcknowledgementMessage, self).__init__(auction_id, MessageType.ACKNOWLEDGEMENT)
 
 
-# TODO: non penso sia necessario, usare metodi callback
-class BidMessage(Message):
+class BidMessage(GenericMessage):
     """ Bid message sent by agent toward auctioneer """
 
     def __init__(self, auction_id, agent_id, value):

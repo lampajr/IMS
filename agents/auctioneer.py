@@ -33,6 +33,7 @@ class Auctioneer(threading.Thread):
         self.contract_time = contract_time
         self.auction_opened = False
         self.winner = None
+        self.terminated = False
 
     def run(self):
         pub.subscribe(self.on_msg_received, topicName=self.topic)
@@ -76,8 +77,9 @@ class Auctioneer(threading.Thread):
             of the contract.
             note: this function needs to be passed in the renewal message """
 
-        if self.task.is_terminated:
+        if self.task.is_terminated and not self.terminated:
             # terminate the execution
+            self.terminated = True
             self.my_print(self.task.name + " task terminated!", color="red")
 
     def announce_task(self):
@@ -130,7 +132,9 @@ class Auctioneer(threading.Thread):
             self.trigger_task(task=self.task)
         else:
             # terminate the execution
-            self.my_print(self.task.name + " task terminated!", color="red")
+            if not self.terminated:
+                self.terminated = True
+                self.my_print(self.task.name + " task terminated!", color="red")
 
     def send_renewal(self):
 

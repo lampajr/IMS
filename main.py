@@ -63,4 +63,4 @@ if __name__ == '__main__':
                              contract_time=contract_time,
                              min_progress=min_progress)
 
-    #auctioneer2.trigger_task(task=task2)
+    auctioneer2.trigger_task(task=task2)

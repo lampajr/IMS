@@ -1,0 +1,88 @@
+from enum import Enum
+from abc import ABC, abstractmethod
+import random
+
+
+class Topic(Enum):
+
+    """ Topics enumeration """
+
+    COOK = 'cook'
+    HANDLE_PAYMENTS = 'handle_payments'
+    DISH_OUT = 'dish_out'
+
+
+class Subject(Enum):
+
+    """ Subjects enumeration: resources available """
+
+    CASH_DESK = 0
+    COOKERS = 1
+    INGREDIENTS = 2
+    KITCHEN = 3
+    TRAYS = 4
+    DISH = 5
+
+
+def get_topic(subjects):
+
+    """ function that given the list of subjects returns
+        the corresponding topic over which negotiate """
+
+    if Subject.COOKERS in subjects and Subject.KITCHEN in subjects and Subject.INGREDIENTS in subjects:
+        return Topic.COOK
+    elif Subject.DISH in subjects and Subject.TRAYS in subjects:
+        return Topic.DISH_OUT
+    elif Subject.CASH_DESK in subjects:
+        return Topic.HANDLE_PAYMENTS
+    else:
+        print('There are no valid resources!!')
+
+
+class Task(ABC):
+
+    """ Abstract Task class """
+
+    def __init__(self, task_id, name, length, subjects):
+        super(Task, self).__init__()
+        self.subjects = subjects
+        self.task_id = task_id
+        self.is_terminated = False
+        self.name = name
+        self.progress = 0
+        self.length = length
+
+    @abstractmethod
+    def execute(self, value):
+        pass
+
+    @abstractmethod
+    def metric(self, state):
+
+        """ metric function used by agent to compute its fitness
+            based on the current state of the agent itself """
+        pass
+
+    def print_progress(self):
+
+        """ print the progress of the current task execution """
+
+        percentage = (self.progress * 100) / self.length
+        print(self.name, ' execution ', percentage, '% complete..')
+
+
+class CookTask(Task):
+
+    def __init__(self, task_id, name, length):
+        super(CookTask, self).__init__(task_id=task_id,
+                                       name=name,
+                                       length=length,
+                                       subjects=[Subject.COOKERS, Subject.KITCHEN, Subject.INGREDIENTS])
+
+    def execute(self, value):
+        self.progress += value  # TODO: use more random update
+        self.print_progress()
+
+    # TODO: change the metric
+    def metric(self, state):
+        return random.randint(0,100)

@@ -24,29 +24,27 @@ class AnnouncementMessage(GenericMessage):
 
     """ Task Announcement message """
 
-    def __init__(self, auction_id, bid_callback):
+    def __init__(self, auction_id, task):
         super(AnnouncementMessage, self).__init__(auction_id, MessageType.ANNOUNCEMENT)
-        self.bid_callback = bid_callback
+        self.task = task
 
 
 class RenewalMessage(GenericMessage):
 
     """ Renewal message sent by auctioneer toward the winner agent """
 
-    def __init__(self,auction_id, winner_id, ack_callback):
+    def __init__(self,auction_id, winner_id):
         super(RenewalMessage).__init__(auction_id, MessageType.RENEWAL)
         self.winner_id = winner_id
-        self.ack_callback = ack_callback
 
 
 class CloseMessage(GenericMessage):
 
     """ Close message, sent by the auctioneer towards all other agents """
 
-    def __init__(self, auction_id, winner_id, task):
+    def __init__(self, auction_id, winner_id):
         super(CloseMessage, self).__init__(auction_id, MessageType.CLOSE)
         self.winner_id = winner_id
-        self.task = task
 
 
 class AcknowledgementMessage(GenericMessage):
@@ -56,9 +54,10 @@ class AcknowledgementMessage(GenericMessage):
 
 
 class BidMessage(GenericMessage):
+
     """ Bid message sent by agent toward auctioneer """
 
     def __init__(self, auction_id, agent_id, value):
-        super(BidMessage).__init__(auction_id, MessageType.BID)
+        super(BidMessage, self).__init__(auction_id, MessageType.BID)
         self.value = value
         self.agent_id = agent_id

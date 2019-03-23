@@ -34,7 +34,7 @@ class RenewalMessage(GenericMessage):
     """ Renewal message sent by auctioneer toward the winner agent """
 
     def __init__(self,auction_id, winner_id):
-        super(RenewalMessage).__init__(auction_id, MessageType.RENEWAL)
+        super(RenewalMessage, self).__init__(auction_id, MessageType.RENEWAL)
         self.winner_id = winner_id
 
 

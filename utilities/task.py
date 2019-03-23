@@ -1,5 +1,6 @@
 from enum import Enum
 from abc import ABC, abstractmethod
+from termcolor import colored
 import random
 
 
@@ -43,8 +44,9 @@ class Task(ABC):
 
     """ Abstract Task class """
 
-    def __init__(self, task_id, name, length, subjects):
+    def __init__(self, task_id, name, length, subjects, color):
         super(Task, self).__init__()
+        self.color = color
         self.subjects = subjects
         self.task_id = task_id
         self.is_terminated = False
@@ -68,19 +70,22 @@ class Task(ABC):
         """ print the progress of the current task execution """
 
         percentage = (self.progress * 100) / self.length
-        print(self.name, ' execution ', percentage, '% complete..')
+        print(colored('             [' + self.name + ']' + ' execution ' + str(percentage) + '% complete..', color=self.color))
 
 
 class CookTask(Task):
 
-    def __init__(self, task_id, name, length):
+    def __init__(self, task_id, name, length, color):
         super(CookTask, self).__init__(task_id=task_id,
                                        name=name,
                                        length=length,
-                                       subjects=[Subject.COOKERS, Subject.KITCHEN, Subject.INGREDIENTS])
+                                       subjects=[Subject.COOKERS, Subject.KITCHEN, Subject.INGREDIENTS],
+                                       color=color)
 
     def execute(self, value):
-        self.progress += value  # TODO: use more random update
+        self.progress += value
+        if self.progress >= self.length:
+            self.is_terminated = True
         self.print_progress()
 
     # TODO: change the metric

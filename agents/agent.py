@@ -2,6 +2,8 @@ import random
 import threading
 import time
 
+from termcolor import colored
+
 from agents.auctioneer import get_time
 from utilities.message import *
 from pubsub import pub
@@ -12,7 +14,7 @@ def update_state(agent):
 
 
 # TODO: consider this class as a thread ??
-class Agent(threading.Thread):
+class Agent():
 
     """ Abstract Agent implementation """
 
@@ -27,10 +29,10 @@ class Agent(threading.Thread):
         self.current_auction = None
         self.last_renewal = None
         self.time_limit = time_limit
-        self.start()
+        self.run()
 
     def run(self):
-        print("I'm agent", self.agent_name, " and I'm subscribing to topic=", self.topic.value)
+        print("I'm agent " + self.agent_name + " and I'm subscribing to the following topic = " + self.topic.value)
         pub.subscribe(self.body, self.topic.value)
 
     def execute_task(self):
@@ -38,8 +40,8 @@ class Agent(threading.Thread):
             if self.current_task.is_terminated:
                 self.reset()
             else:
-                print('Hi! Agent ', self.agent_id, ' is executing task ', self.current_task.task_id, ':')
-                self.current_task.execute(value=random.randint(0, 10))
+                self.my_print("I'm executing the " + self.current_task.name)
+                self.current_task.execute(value=random.randint(0, 100))
 
     def reset(self):
         self.current_task = None
@@ -51,68 +53,62 @@ class Agent(threading.Thread):
         """ the body of the agent, what it should do when requested
             in according to the kind of message received (arg1)"""
 
-
-        if self.last_renewal is not None and get_time() - self.last_renewal > self.time_limit:
-            self.reset()
-
         if arg1.msg_type == MessageType.ANNOUNCEMENT:
-            print(self.agent_name, ": Message received ->", arg1.msg_type)
+            self.my_print("new message received = " + str(arg1.msg_type.name))
             self.on_announce(msg=arg1)
-        elif arg1.msg_type == MessageType.RENEWAL:
-            print(self.agent_name, ": Message received ->", arg1.msg_type)
-            self.on_renewal(msg=arg1)
+        elif arg1.msg_type == MessageType.RENEWAL and arg1.winner_id == self.agent_id:
+            self.my_print("new message received = " + str(arg1.msg_type.name))
+            if self.current_task is not None and not self.current_task.is_terminated:
+                self.on_renewal(msg=arg1)
         elif arg1.msg_type == MessageType.CLOSE:
-            print(self.agent_name, ": Message received ->", arg1.msg_type)
+            self.my_print("new message received = " + str(arg1.msg_type.name))
             self.on_close(msg=arg1)
 
     def on_announce(self, msg):
-        self.my_print("on announce")
         self.current_auction = msg.auction_id
         self.current_task = msg.task
-        sleep = random.randint(0, 10)
-        self.my_print("I will sleep for " + str(sleep))
-        time.sleep(sleep)
+
         fitness = self.current_task.metric(state=self.state)
 
         # generate bid message
         msg = BidMessage(auction_id=self.current_auction,
                          agent_id=self.agent_id,
                          value=fitness)
-        self.my_print("sending bid..")
+        self.my_print("sending BID message..")
         # send bid to the auctioneer
         pub.sendMessage(topicName=self.topic.value, arg1=msg)
 
     def on_renewal(self, msg):
-        self.my_print("on renewal")
         if self.check_msg(msg):
             # discard any message not related to the current auction
             # or if i'm not the winner
             return
+
+        self.my_print("contract renewal occurred..")
         self.last_renewal = get_time()
         self.execute_task()
 
         # generate ack message
         msg = AcknowledgementMessage(auction_id=self.current_auction)
         # notify auctioneer that I'm working
+        self.my_print("sending ACK message..")
         pub.sendMessage(topicName=self.topic.value, arg1=msg)
 
     def on_close(self, msg):
-        self.my_print("on close")
         if self.check_msg(msg):
             # discard any message not related to the current auction
             # or if i'm not the winner
             self.reset()
             return
-        print("I'm agent ", self.agent_id, " and I'm the Winner!!!\n I'm going to start the task.")
+        self.my_print("I'm the winner!!")
+        self.my_print("I'm going to start the task.")
         self.execute_task()
-        # generate ack message
-        msg = AcknowledgementMessage(auction_id=self.current_auction)
-        # notify auctioneer that I'm working
-        pub.sendMessage(topicName=self.topic.value, arg1=msg)
 
     def check_msg(self, msg):
-        return msg.auction_id != self.current_auction or msg.winner != self.agent_id
+        return msg.auction_id != self.current_auction or msg.winner_id != self.agent_id
 
     def my_print(self, message):
-        print(self.agent_name, ':', message)
+        prefix = '      [' + str(self.agent_id) + ':' + self.agent_name + ']'
+        color = 'blue' if self.current_task is None else self.current_task.color
+        print(colored(prefix + " -> " + message, color=color))
 

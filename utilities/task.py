@@ -52,6 +52,7 @@ class Task(ABC):
         self.is_terminated = False
         self.name = name
         self.progress = 0
+        self.previous_progress = -100000  # initialized to a very negative number
         self.length = length
 
     @abstractmethod
@@ -83,6 +84,7 @@ class CookTask(Task):
                                        color=color)
 
     def execute(self, value):
+        self.previous_progress = self.progress
         self.progress += value
         if self.progress >= self.length:
             self.is_terminated = True
@@ -90,4 +92,24 @@ class CookTask(Task):
 
     # TODO: change the metric
     def metric(self, state):
-        return random.randint(0,100)
+        return random.randint(0, 100)
+
+
+class DishOutTask(Task):
+
+    def __init__(self, task_id, name, length, color):
+        super(DishOutTask, self).__init__(task_id=task_id,
+                                          name=name,
+                                          length=length,
+                                          subjects=[Subject.DISH, Subject.TRAYS],
+                                          color=color)
+
+    def execute(self, value):
+        self.progress += value
+        if self.progress >= self.length:
+            self.is_terminated = True
+        self.print_progress()
+
+    # TODO: change the metric
+    def metric(self, state):
+        return random.randint(0, 100)

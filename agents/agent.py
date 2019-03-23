@@ -14,22 +14,23 @@ def update_state(agent):
 
 
 # TODO: consider this class as a thread ??
-class Agent():
+class Agent(threading.Thread):
 
     """ Abstract Agent implementation """
 
     # TODO: in the child classes add their specific properties
-    def __init__(self, agent_id, name, topic, time_limit):
+    def __init__(self, agent_id, name, topic, contract_time):
         super(Agent, self).__init__()
         self.agent_name = name
         self.agent_id = agent_id
         self.topic = topic
+        self.occupied = False
         self.state = None
         self.current_task = None
         self.current_auction = None
         self.last_renewal = None
-        self.time_limit = time_limit
-        self.run()
+        self.contract_time = contract_time
+        self.start()
 
     def run(self):
         print("I'm agent " + self.agent_name + " and I'm subscribing to the following topic = " + self.topic.value)
@@ -46,6 +47,7 @@ class Agent():
     def reset(self):
         self.current_task = None
         self.current_auction = None
+        self.occupied = False
         self.state = update_state(self)
 
     def body(self, arg1):
@@ -53,7 +55,13 @@ class Agent():
         """ the body of the agent, what it should do when requested
             in according to the kind of message received (arg1)"""
 
-        if arg1.msg_type == MessageType.ANNOUNCEMENT:
+        # this means that the auctioneer has reallocated my task
+        # limit needs to be the same or greater wrt the contract limit of
+        # the auctioneer
+        if self.occupied and self.last_renewal is not None and (get_time() - self.last_renewal) > self.contract_time:
+            self.reset()
+
+        if arg1.msg_type == MessageType.ANNOUNCEMENT and not self.occupied:
             self.my_print("new message received = " + str(arg1.msg_type.name))
             self.on_announce(msg=arg1)
         elif arg1.msg_type == MessageType.RENEWAL and arg1.winner_id == self.agent_id:
@@ -67,6 +75,7 @@ class Agent():
     def on_announce(self, msg):
         self.current_auction = msg.auction_id
         self.current_task = msg.task
+        self.occupied = True
 
         fitness = self.current_task.metric(state=self.state)
 
@@ -102,6 +111,7 @@ class Agent():
             return
         self.my_print("I'm the winner!!")
         self.my_print("I'm going to start the task.")
+        self.occupied = True
         self.execute_task()
 
     def check_msg(self, msg):
@@ -109,6 +119,6 @@ class Agent():
 
     def my_print(self, message):
         prefix = '      [' + str(self.agent_id) + ':' + self.agent_name + ']'
-        color = 'blue' if self.current_task is None else self.current_task.color
+        color = 'grey' if self.current_task is None else self.current_task.color
         print(colored(prefix + " -> " + message, color=color))
 

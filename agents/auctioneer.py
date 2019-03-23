@@ -1,3 +1,5 @@
+import random
+
 from pubsub import pub
 import time
 import threading as threading
@@ -12,16 +14,11 @@ def get_time():
     return int(round(time.time() * 1000))
 
 
-def prova(agent_id, value):
-    print(agent_id, 'received value =', value)
-
-
-# TODO: consider also this class as a thread
 class Auctioneer(threading.Thread):
 
-    """ Abstract Auctioneer implementation """
+    """ Auctioneer implementation """
 
-    def __init__(self, auction_id, time_limit, contract_limit):
+    def __init__(self, auction_id, max_elapsed_bids_time, contract_time):
         super(Auctioneer, self).__init__()
         # message data
         self.task = None
@@ -31,10 +28,8 @@ class Auctioneer(threading.Thread):
         self.auction_id = auction_id
         self.last_renewal = None
         self.bids = []
-        self.lock = threading.Lock()
-        self.time_limit = time_limit
-        self.contract_limit = contract_limit
-        self.auction_started_time = None
+        self.max_elapsed_bids_time = max_elapsed_bids_time  # in seconds
+        self.contract_time = contract_time
         self.auction_opened = False
         self.winner = None
 
@@ -59,7 +54,10 @@ class Auctioneer(threading.Thread):
     def trigger_task(self, task):
         self.topic = get_topic(task.subjects).value
         self.task = task
-        self.start()
+        if not self.isAlive():
+            self.start()
+        else:
+            self.announce_task()
 
     ###### PUBLISH/SUBSCRIBER COMMUNICATION MODEL ######
 
@@ -67,17 +65,9 @@ class Auctioneer(threading.Thread):
 
         """ callback method used by agents for submitting a bid for claiming a specific task """
 
-        self.lock.acquire()
-
         if self.auction_opened:
             self.bids.append((agent_id, value))
             self.my_print("bid received from agent " + str(agent_id) + ", value of " + str(value))
-
-        if len(self.bids) == 2:
-            self.close_auction()
-
-        # release the lock on this method
-        self.lock.release()
 
     def acknowledge(self):
 
@@ -87,10 +77,7 @@ class Auctioneer(threading.Thread):
 
         if self.task.is_terminated:
             # terminate the execution
-            self.my_print(self.task.name + " task terminated!")
-        #else:
-            # resend renewal
-        #    self.send_renewal()
+            self.my_print(self.task.name + " task terminated!", color="red")
 
     def announce_task(self):
 
@@ -98,13 +85,17 @@ class Auctioneer(threading.Thread):
             starting the Auction for the allocation of the task """
 
         self.auction_opened = True
-        self.auction_started_time = get_time()
         announcement_message = AnnouncementMessage(auction_id=self.auction_id,
                                                    task=self.task)
         self.my_print("new task triggered : " + str(self.task.name))
         self.my_print("sending TASK ANNOUNCEMENT on " + self.topic + " topic")
+        self.my_print("awaiting bids..")
         pub.sendMessage(self.topic, arg1=announcement_message)
-        pass
+
+        # put current execution at sleep for 'time limit' slot
+        time.sleep(self.max_elapsed_bids_time)
+        # enough time was passed.. close the auction and choose the winner
+        self.close_auction()
 
     def close_auction(self):
 
@@ -123,9 +114,17 @@ class Auctioneer(threading.Thread):
         self.start_loop_check_progress()
 
     def start_loop_check_progress(self):
-        while not self.task.is_terminated:
+        while not self.task.is_terminated and (self.task.progress - self.task.previous_progress) > self.contract_time:
             self.send_renewal()
             time.sleep(3)
+
+        if not self.task.is_terminated:
+            # we need to reallocate the task
+            self.my_print("I need to reallocate the " + self.task.name + " task cause something goes wrong")
+            # change auction id
+            self.auction_id = "a" + str(random.randint(0, 500))
+            self.reset_bids()
+            self.trigger_task(task=self.task)
 
     def send_renewal(self):
 
@@ -152,6 +151,8 @@ class Auctioneer(threading.Thread):
             self.my_print("new message received " + str(arg1.msg_type.name))
             self.acknowledge()
 
-    def my_print(self, message):
+    def my_print(self, message, color=None):
         prefix = '[' + str(self.auction_id) + ':auctioneer]'
-        print(colored(prefix + " -> " + message, color=self.task.color))
+        if color is None:
+            color = self.task.color
+        print(colored(prefix + " -> " + message, color=color))

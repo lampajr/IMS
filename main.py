@@ -3,27 +3,57 @@ from agents.auctioneer import Auctioneer
 from utilities.message import *
 from utilities.task import *
 
+# TODO: change metric computation
+# TODO: setup state of the agent (think if add env or not)
+
 
 if __name__ == '__main__':
-    time_limit = 4
-    contract_limit = 1500
+    contract_time = 40
+
+    ##### TASKS ####
+
     task1 = CookTask(task_id=1,
                      name="Cook spaghetti",
                      length=500,
                      color="green")
 
+    task2 = DishOutTask(task_id=2,
+                        name="Dish out spaghetti",
+                        length=200,
+                        color="blue")
+
+    #### AGENTS #####
+
     agent1 = Agent(agent_id=1,
-                   name="Main Chef",
+                   name="Main-Chef",
                    topic=Topic.COOK,
-                   time_limit=500)
+                   contract_time=contract_time)
 
     agent2 = Agent(agent_id=2,
                    name="Sub-Chef",
                    topic=Topic.COOK,
-                   time_limit=500)
+                   contract_time=contract_time)
+
+    agent3 = Agent(agent_id=3,
+                   name="Waiter George",
+                   topic=Topic.DISH_OUT,
+                   contract_time=contract_time)
+
+    agent4 = Agent(agent_id=4,
+                   name="Waiter Mike",
+                   topic=Topic.DISH_OUT,
+                   contract_time=contract_time)
+
+    ##### AUCTIONEERS #####
 
     auctioneer1 = Auctioneer(auction_id="a1",
-                             time_limit=time_limit,
-                             contract_limit=contract_limit)
+                             max_elapsed_bids_time=3,
+                             contract_time=contract_time)
 
     auctioneer1.trigger_task(task=task1)
+
+    auctioneer2 = Auctioneer(auction_id="a2",
+                             max_elapsed_bids_time=3,
+                             contract_time=contract_time)
+
+    #auctioneer2.trigger_task(task=task2)

@@ -18,7 +18,7 @@ class Auctioneer(threading.Thread):
 
     """ Auctioneer implementation """
 
-    def __init__(self, auction_id, max_elapsed_bids_time, contract_time):
+    def __init__(self, auction_id, max_elapsed_bids_time, contract_time, min_progress):
         super(Auctioneer, self).__init__()
         # message data
         self.task = None
@@ -28,6 +28,7 @@ class Auctioneer(threading.Thread):
         self.auction_id = auction_id
         self.last_renewal = None
         self.bids = []
+        self.min_progress = min_progress
         self.max_elapsed_bids_time = max_elapsed_bids_time  # in seconds
         self.contract_time = contract_time
         self.auction_opened = False
@@ -85,6 +86,7 @@ class Auctioneer(threading.Thread):
             starting the Auction for the allocation of the task """
 
         self.auction_opened = True
+        self.reset_bids()
         announcement_message = AnnouncementMessage(auction_id=self.auction_id,
                                                    task=self.task)
         self.my_print("new task triggered : " + str(self.task.name))
@@ -106,6 +108,7 @@ class Auctioneer(threading.Thread):
         self.auction_opened = False
 
         self.winner = self.compute_winner()
+        self.my_print("there is onw winner => " + str(self.winner))
         close_message = CloseMessage(auction_id=self.auction_id,
                                      winner_id=self.winner)
         self.my_print("sending CLOSE message..")
@@ -114,13 +117,13 @@ class Auctioneer(threading.Thread):
         self.start_loop_check_progress()
 
     def start_loop_check_progress(self):
-        while not self.task.is_terminated and (self.task.progress - self.task.previous_progress) > self.contract_time:
+        while not self.task.is_terminated and (self.task.progress - self.task.previous_progress) >= self.min_progress:
             self.send_renewal()
             time.sleep(3)
 
         if not self.task.is_terminated:
             # we need to reallocate the task
-            self.my_print("I need to reallocate the " + self.task.name + " task cause something goes wrong")
+            self.my_print("I need to reallocate the " + self.task.name + " task cause something went wrong")
             # change auction id
             self.auction_id = "a" + str(random.randint(0, 500))
             self.reset_bids()

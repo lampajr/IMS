@@ -19,7 +19,7 @@ class Agent(threading.Thread):
     """ Abstract Agent implementation """
 
     # TODO: in the child classes add their specific properties
-    def __init__(self, agent_id, name, topic, contract_time):
+    def __init__(self, agent_id, name, topic, contract_time, min_progress):
         super(Agent, self).__init__()
         self.agent_name = name
         self.agent_id = agent_id
@@ -29,6 +29,7 @@ class Agent(threading.Thread):
         self.current_task = None
         self.current_auction = None
         self.last_renewal = None
+        self.min_progress = min_progress
         self.contract_time = contract_time
         self.start()
 
@@ -55,15 +56,15 @@ class Agent(threading.Thread):
         """ the body of the agent, what it should do when requested
             in according to the kind of message received (arg1)"""
 
-        # this means that the auctioneer has reallocated my task
-        # limit needs to be the same or greater wrt the contract limit of
-        # the auctioneer
-        if self.occupied and self.last_renewal is not None and (get_time() - self.last_renewal) > self.contract_time:
-            self.reset()
-
-        if arg1.msg_type == MessageType.ANNOUNCEMENT and not self.occupied:
-            self.my_print("new message received = " + str(arg1.msg_type.name))
-            self.on_announce(msg=arg1)
+        if arg1.msg_type == MessageType.ANNOUNCEMENT:
+            # this means that the auctioneer has reallocated my task
+            # limit needs to be the same or greater wrt the contract limit of
+            # the auctioneer
+            if self.occupied and (self.current_task.progress - self.current_task.previous_progress) < self.min_progress:
+                self.reset()
+            if not self.occupied:
+                self.my_print("new message received = " + str(arg1.msg_type.name))
+                self.on_announce(msg=arg1)
         elif arg1.msg_type == MessageType.RENEWAL and arg1.winner_id == self.agent_id:
             self.my_print("new message received = " + str(arg1.msg_type.name))
             if self.current_task is not None and not self.current_task.is_terminated:

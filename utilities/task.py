@@ -73,6 +73,8 @@ class Task(ABC):
         """ print the progress of the current task execution """
 
         percentage = (self.progress * 100) / self.length
+        if percentage > 100:
+            percentage = 100
         print(colored('{' + str(datetime.datetime.now().time()) + '}', "grey"),
               colored('             [' + self.name + ']' + ' execution ' + str(percentage) + '% complete..', color=self.color))
 

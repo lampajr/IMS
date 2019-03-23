@@ -128,6 +128,9 @@ class Auctioneer(threading.Thread):
             self.auction_id = "a" + str(random.randint(0, 500))
             self.reset_bids()
             self.trigger_task(task=self.task)
+        else:
+            # terminate the execution
+            self.my_print(self.task.name + " task terminated!", color="red")
 
     def send_renewal(self):
 

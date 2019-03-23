@@ -1,3 +1,4 @@
+import datetime
 import random
 
 from pubsub import pub
@@ -34,6 +35,7 @@ class Auctioneer(threading.Thread):
         self.auction_opened = False
         self.winner = None
         self.terminated = False
+        self.ack_stack = []
 
     def run(self):
         pub.subscribe(self.on_msg_received, topicName=self.topic)
@@ -71,11 +73,17 @@ class Auctioneer(threading.Thread):
             self.bids.append((agent_id, value))
             self.my_print("bid received from agent " + str(agent_id) + ", value of " + str(value))
 
-    def acknowledge(self):
+    def on_acknowledge(self, ack_id):
 
         """ callback method used by winner agent after a renewal
             of the contract.
             note: this function needs to be passed in the renewal message """
+
+        last_id = self.ack_stack.pop()
+
+        if last_id != ack_id:
+            # wrong order renewal-ack
+            pass
 
         if self.task.is_terminated and not self.terminated:
             # terminate the execution
@@ -110,7 +118,7 @@ class Auctioneer(threading.Thread):
         self.auction_opened = False
 
         self.winner = self.compute_winner()
-        self.my_print("there is onw winner => " + str(self.winner))
+        self.my_print("there is a winner => " + str(self.winner))
         close_message = CloseMessage(auction_id=self.auction_id,
                                      winner_id=self.winner)
         self.my_print("sending CLOSE message..")
@@ -120,29 +128,41 @@ class Auctioneer(threading.Thread):
 
     def start_loop_check_progress(self):
         while not self.task.is_terminated and (self.task.progress - self.task.previous_progress) >= self.min_progress:
+            if len(self.ack_stack) != 0:
+                # the ack msg related to the previous renewal was not yet received
+                self.reallocate(log_msg=" task cause no ack received!")
             self.send_renewal()
             time.sleep(3)
 
         if not self.task.is_terminated:
-            # we need to reallocate the task
-            self.my_print("I need to reallocate the " + self.task.name + " task cause something went wrong")
-            # change auction id
-            self.auction_id = "a" + str(random.randint(0, 500))
-            self.reset_bids()
-            self.trigger_task(task=self.task)
+            self.reallocate(log_msg=" task cause the progress wasn't enough!")
         else:
             # terminate the execution
             if not self.terminated:
                 self.terminated = True
                 self.my_print(self.task.name + " task terminated!", color="red")
 
+    def reallocate(self, log_msg):
+
+        """ reallocate the current task """
+
+        # we need to reallocate the task
+        self.my_print("I need to reallocate the " + self.task.name + log_msg)
+        # change auction id
+        self.auction_id = self.auction_id + str(random.randint(0, 50))
+        self.reset_bids()
+        self.trigger_task(task=self.task)
+
     def send_renewal(self):
 
         """ send a RENEWAL message on the specific topic,
             it is addressed to the previous winner """
 
+        renewal_id = random.randint(0, 500)
+        self.ack_stack.append(renewal_id)
         renewal_message = RenewalMessage(auction_id=self.auction_id,
-                                         winner_id=self.winner)
+                                         winner_id=self.winner,
+                                         renewal_id=renewal_id)
         self.last_renewal = get_time()
         self.my_print("sending RENEWAL of task" + str(self.task.task_id) + " to agent " + str(self.winner) + "..")
         pub.sendMessage(self.topic, arg1=renewal_message)
@@ -159,10 +179,10 @@ class Auctioneer(threading.Thread):
                      value=arg1.value)
         elif arg1.msg_type == MessageType.ACKNOWLEDGEMENT:
             self.my_print("new message received " + str(arg1.msg_type.name))
-            self.acknowledge()
+            self.on_acknowledge(arg1.ack_id)
 
     def my_print(self, message, color=None):
         prefix = '[' + str(self.auction_id) + ':auctioneer]'
         if color is None:
             color = self.task.color
-        print(colored(prefix + " -> " + message, color=color))
+        print(colored('{' + str(datetime.datetime.now().time()) + '}', "grey"), colored(prefix + " -> " + message, color=color))

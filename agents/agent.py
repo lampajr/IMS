@@ -1,3 +1,4 @@
+import datetime
 import random
 import threading
 import time
@@ -13,7 +14,14 @@ def update_state(agent):
     return None
 
 
-# TODO: consider this class as a thread ??
+class State:
+
+    def __init__(self, energy, cleverness, speed):
+        self.energy = energy            # max value 100%
+        self.cleverness = cleverness    # value from 0 to 5
+        self.speed = speed              # value from 0 to 5
+
+# TODO: fix a state for the agent, considera energia, bravura, velocità..
 class Agent(threading.Thread):
 
     """ Abstract Agent implementation """
@@ -99,7 +107,8 @@ class Agent(threading.Thread):
         self.execute_task()
 
         # generate ack message
-        msg = AcknowledgementMessage(auction_id=self.current_auction)
+        msg = AcknowledgementMessage(auction_id=self.current_auction,
+                                     ack_id=msg.renewal_id)
         # notify auctioneer that I'm working
         self.my_print("sending ACK message..")
         pub.sendMessage(topicName=self.topic.value, arg1=msg)
@@ -121,5 +130,5 @@ class Agent(threading.Thread):
     def my_print(self, message):
         prefix = '      [' + str(self.agent_id) + ':' + self.agent_name + ']'
         color = 'grey' if self.current_task is None else self.current_task.color
-        print(colored(prefix + " -> " + message, color=color))
+        print(colored('{' + str(datetime.datetime.now().time()) + '}', "grey"), colored(prefix + " -> " + message, color=color))
 

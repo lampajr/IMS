@@ -16,11 +16,13 @@ if __name__ == '__main__':
     task1 = CookTask(task_id=1,
                      name="Cook spaghetti",
                      length=500,
+                     difficulty=5,
                      color="green")
 
     task2 = DishOutTask(task_id=2,
                         name="Dish out spaghetti",
                         length=200,
+                        difficulty=5,
                         color="blue")
 
     #### AGENTS #####
@@ -63,4 +65,4 @@ if __name__ == '__main__':
                              contract_time=contract_time,
                              min_progress=min_progress)
 
-    auctioneer2.trigger_task(task=task2)
+    #auctioneer2.trigger_task(task=task2)

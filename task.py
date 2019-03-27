@@ -26,6 +26,18 @@ class Subject(Enum):
     DISH = 5
 
 
+def get_subjects(topic):
+
+    """ provide list of subject required given a topic """
+
+    if topic == Topic.COOK:
+        return [Subject.COOKERS, Subject.KITCHEN, Subject.INGREDIENTS]
+    elif topic == Topic.HANDLE_PAYMENTS:
+        return [Subject.TRAYS, Subject.DISH]
+    elif topic == Topic.DISH_OUT:
+        return [Subject.CASH_DESK]
+
+
 def get_topic(subjects):
 
     """ function that given the list of subjects returns

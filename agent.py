@@ -42,7 +42,7 @@ class Agent(threading.Thread):
         self.start()
 
     def run(self):
-        print("I'm agent " + self.agent_name + " and I'm subscribing to the following topic = " + self.topic.value)
+        self.log("I'm agent " + self.agent_name + " and I'm subscribing to the following topic = " + self.topic.value)
         pub.subscribe(self.body, self.topic.value)
 
     def execute_task(self):
@@ -50,7 +50,7 @@ class Agent(threading.Thread):
             if self.current_task.is_terminated:
                 self.reset()
             else:
-                self.my_print("I'm executing the " + self.current_task.name)
+                self.log("I'm executing the " + self.current_task.name)
                 self.current_task.execute(value=random.randint(0, 100))
 
     def reset(self):
@@ -71,14 +71,14 @@ class Agent(threading.Thread):
             if self.occupied and (self.current_task.progress - self.current_task.previous_progress) < self.min_progress:
                 self.reset()
             if not self.occupied:
-                self.my_print("new message received = " + str(arg1.msg_type.name))
+                self.log("new message received = " + str(arg1.msg_type.name))
                 self.on_announce(msg=arg1)
         elif arg1.msg_type == MessageType.RENEWAL and arg1.winner_id == self.agent_id:
-            self.my_print("new message received = " + str(arg1.msg_type.name))
+            self.log("new message received = " + str(arg1.msg_type.name))
             if self.current_task is not None and not self.current_task.is_terminated:
                 self.on_renewal(msg=arg1)
         elif arg1.msg_type == MessageType.CLOSE:
-            self.my_print("new message received = " + str(arg1.msg_type.name))
+            self.log("new message received = " + str(arg1.msg_type.name))
             self.on_close(msg=arg1)
 
     def on_announce(self, msg):
@@ -92,7 +92,7 @@ class Agent(threading.Thread):
         msg = BidMessage(auction_id=self.current_auction,
                          agent_id=self.agent_id,
                          value=fitness)
-        self.my_print("sending BID message..")
+        self.log("sending BID message..")
         # send bid to the auctioneer
         pub.sendMessage(topicName=self.topic.value, arg1=msg)
 
@@ -102,7 +102,7 @@ class Agent(threading.Thread):
             # or if i'm not the winner
             return
 
-        self.my_print("contract renewal occurred..")
+        self.log("contract renewal occurred..")
         self.last_renewal = get_time()
         self.execute_task()
 
@@ -110,7 +110,7 @@ class Agent(threading.Thread):
         msg = AcknowledgementMessage(auction_id=self.current_auction,
                                      ack_id=msg.renewal_id)
         # notify auctioneer that I'm working
-        self.my_print("sending ACK message..")
+        self.log("sending ACK message..")
         pub.sendMessage(topicName=self.topic.value, arg1=msg)
 
     def on_close(self, msg):
@@ -119,16 +119,19 @@ class Agent(threading.Thread):
             # or if i'm not the winner
             self.reset()
             return
-        self.my_print("I'm the winner!!")
-        self.my_print("I'm going to start the task.")
+        self.log("I'm the winner!!")
+        self.log("I'm going to start the task.")
         self.occupied = True
         self.execute_task()
 
     def check_msg(self, msg):
         return msg.auction_id != self.current_auction or msg.winner_id != self.agent_id
 
-    def my_print(self, message):
+    def log(self, message, use_time=False):
         prefix = '      [' + str(self.agent_id) + ':' + self.agent_name + ']'
         color = 'grey' if self.current_task is None else self.current_task.color
-        print(colored('{' + str(datetime.datetime.now().time()) + '}', "grey"), colored(prefix + " -> " + message, color=color))
+        res = ""
+        if use_time:
+            res += colored('{' + str(datetime.datetime.now().time()) + '}', "grey")
+        print(res + colored(prefix + " -> " + message, color=color))
 

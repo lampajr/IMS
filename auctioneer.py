@@ -45,6 +45,10 @@ class Auctioneer(threading.Thread):
 
         """ compute the winner agent and returns its id """
 
+        if len(self.bids) == 0:
+            self.log(message="There are no bids.. task discarded!")
+            return None
+
         winner = None
         for agent_id, value in self.bids:
             if winner is None or value > winner[1]:
@@ -71,7 +75,7 @@ class Auctioneer(threading.Thread):
 
         if self.auction_opened:
             self.bids.append((agent_id, value))
-            self.my_print("bid received from agent " + str(agent_id) + ", value of " + str(value))
+            self.log("bid received from agent " + str(agent_id) + ", value of " + str(value))
 
     def on_acknowledge(self, ack_id):
 
@@ -88,7 +92,7 @@ class Auctioneer(threading.Thread):
         if self.task.is_terminated and not self.terminated:
             # terminate the execution
             self.terminated = True
-            self.my_print(self.task.name + " task terminated!", color="red")
+            self.log(self.task.name + " task terminated!", color="red")
 
     def announce_task(self):
 
@@ -99,9 +103,9 @@ class Auctioneer(threading.Thread):
         self.reset_bids()
         announcement_message = AnnouncementMessage(auction_id=self.auction_id,
                                                    task=self.task)
-        self.my_print("new task triggered : " + str(self.task.name))
-        self.my_print("sending TASK ANNOUNCEMENT on " + self.topic + " topic")
-        self.my_print("awaiting bids..")
+        self.log("new task triggered : " + str(self.task.name))
+        self.log("sending TASK ANNOUNCEMENT on " + self.topic + " topic")
+        self.log("awaiting bids..")
         pub.sendMessage(self.topic, arg1=announcement_message)
 
         # put current execution at sleep for 'time limit' slot
@@ -118,10 +122,14 @@ class Auctioneer(threading.Thread):
         self.auction_opened = False
 
         self.winner = self.compute_winner()
-        self.my_print("there is a winner => " + str(self.winner))
+
+        if self.winner is None:
+            return
+
+        self.log("there is a winner => " + str(self.winner))
         close_message = CloseMessage(auction_id=self.auction_id,
                                      winner_id=self.winner)
-        self.my_print("sending CLOSE message..")
+        self.log("sending CLOSE message..")
         pub.sendMessage(self.topic, arg1=close_message)
 
         self.start_loop_check_progress()
@@ -140,14 +148,14 @@ class Auctioneer(threading.Thread):
             # terminate the execution
             if not self.terminated:
                 self.terminated = True
-                self.my_print(self.task.name + " task terminated!", color="red")
+                self.log(self.task.name + " task terminated!", color="red")
 
     def reallocate(self, log_msg):
 
         """ reallocate the current task """
 
         # we need to reallocate the task
-        self.my_print("I need to reallocate the " + self.task.name + log_msg)
+        self.log("I need to reallocate the " + self.task.name + log_msg)
         # change auction id
         self.auction_id = self.auction_id + str(random.randint(0, 50))
         self.reset_bids()
@@ -164,7 +172,7 @@ class Auctioneer(threading.Thread):
                                          winner_id=self.winner,
                                          renewal_id=renewal_id)
         self.last_renewal = get_time()
-        self.my_print("sending RENEWAL of task" + str(self.task.task_id) + " to agent " + str(self.winner) + "..")
+        self.log("sending RENEWAL of task" + str(self.task.task_id) + " to agent " + str(self.winner) + "..")
         pub.sendMessage(self.topic, arg1=renewal_message)
 
     def on_msg_received(self, arg1):
@@ -174,15 +182,18 @@ class Auctioneer(threading.Thread):
             return
 
         if arg1.msg_type == MessageType.BID:
-            self.my_print("new message received " + str(arg1.msg_type.name))
+            self.log("new message received " + str(arg1.msg_type.name))
             self.bid(agent_id=arg1.agent_id,
                      value=arg1.value)
         elif arg1.msg_type == MessageType.ACKNOWLEDGEMENT:
-            self.my_print("new message received " + str(arg1.msg_type.name))
+            self.log("new message received " + str(arg1.msg_type.name))
             self.on_acknowledge(arg1.ack_id)
 
-    def my_print(self, message, color=None):
+    def log(self, message, color=None, use_time=False):
         prefix = '[' + str(self.auction_id) + ':auctioneer]'
         if color is None:
             color = self.task.color
-        print(colored('{' + str(datetime.datetime.now().time()) + '}', "grey"), colored(prefix + " -> " + message, color=color))
+        res = ""
+        if use_time:
+            res += colored('{' + str(datetime.datetime.now().time()) + '}', "grey")
+        print(res + colored(prefix + " -> " + message, color=color))

@@ -24,20 +24,21 @@ def trigger_task():
         topic = input()
 
     if topic == "a":
-        task = CookTask(task_id=random.randint(0, MAX_N),
+        task = CookTask(task_id="t" + str(random.randint(0, MAX_N)),
                         name=name,
-                        length=length,
+                        length=int(length),
                         difficulty=5,
                         color=color)
     elif topic == "b":
         task = None
     else:
-        task = DishOutTask(task_id=random.randint(0, MAX_N),
+        task = DishOutTask(task_id=str(random.randint(0, MAX_N)),
                            name=name,
-                           length=length,
+                           length=int(length),
                            difficulty=5,
                            color=color)
 
+    tasks.append(task)
     auctioneer = generate_auctioneer()
     auctioneer.trigger_task(task=task)
 
@@ -45,10 +46,10 @@ def trigger_task():
 def generate_auctioneer():
     max_elapsed_bids_time, contract_time, min_progress = 5, 10, 30
 
-    return Auctioneer(auction_id=random.randint(0, MAX_N),
-                      max_elapsed_bids_time=max_elapsed_bids_time,
-                      contract_time=contract_time,
-                      min_progress=min_progress)
+    return Auctioneer(auction_id="auct" + str(random.randint(0, MAX_N)),
+                      max_elapsed_bids_time=int(max_elapsed_bids_time),
+                      contract_time=int(contract_time),
+                      min_progress=int(min_progress))
 
 
 def insert_agent():
@@ -74,13 +75,30 @@ def insert_agent():
     contract_time = input("Insert contract time..")
     min_progress = input("Insert minimum progress allowed..")
 
-    agents.append(Agent(agent_id=random.randint(0, MAX_N),
+    agents.append(Agent(agent_id="ag" + str(random.randint(0, MAX_N)),
                         name=name,
                         topic=topic,
-                        contract_time=contract_time,
-                        min_progress=min_progress))
+                        contract_time=int(contract_time),
+                        min_progress=int(min_progress)))
     print("New agent correctly inserted in the environment!")
 
+
+def invalidate_agent():
+    pos = int(input("Insert position of agent to invalidate.."))
+
+    if pos < 0 or pos > len(agents):
+        return
+
+    agents[pos].invalidate()
+
+
+def restore_agent():
+    pos = int(input("Insert position of agent to restore.."))
+
+    if pos < 0 or pos > len(agents):
+        return
+
+    agents[pos].restore()
 
 if __name__ == '__main__':
     cmd = None
@@ -90,6 +108,9 @@ if __name__ == '__main__':
             print("What do you want to do?")
             print("1) --> Insert new agent")
             print("2) --> Trigger a new task")
+            print("3) --> Invalidate agent")
+            print("4) --> Restore agent")
+            print("h) --> Repeat menu")
             print("0) --> exit")
 
             cmd = input()
@@ -98,6 +119,12 @@ if __name__ == '__main__':
                 insert_agent()
             elif cmd == "2":
                 trigger_task()
+            elif cmd == "3":
+                invalidate_agent()
+            elif cmd == "4":
+                restore_agent()
+            elif cmd == "h":
+                continue
 
     except KeyboardInterrupt:
         exit(0)

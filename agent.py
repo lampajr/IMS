@@ -32,6 +32,7 @@ class Agent(threading.Thread):
         self.agent_name = name
         self.agent_id = agent_id
         self.topic = topic
+        self.invalidated = False
         self.occupied = False
         self.state = None
         self.current_task = None
@@ -44,6 +45,12 @@ class Agent(threading.Thread):
     def run(self):
         self.log("I'm agent " + self.agent_name + " and I'm subscribing to the following topic = " + self.topic.value)
         pub.subscribe(self.body, self.topic.value)
+
+    def invalidate(self):
+        self.invalidated = True
+
+    def restore(self):
+        self.invalidated = False
 
     def execute_task(self):
         if self.current_task is not None:
@@ -63,6 +70,11 @@ class Agent(threading.Thread):
 
         """ the body of the agent, what it should do when requested
             in according to the kind of message received (arg1)"""
+
+        if self.invalidated:
+            # simulate the robot's failed state
+            # so discard everything
+            return
 
         if arg1.msg_type == MessageType.ANNOUNCEMENT:
             # this means that the auctioneer has reallocated my task

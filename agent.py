@@ -1,12 +1,11 @@
 import datetime
 import random
 import threading
-import time
 
 from termcolor import colored
 
-from agents.auctioneer import get_time
-from utilities.message import *
+from auctioneer import get_time
+from message import *
 from pubsub import pub
 
 
@@ -21,7 +20,8 @@ class State:
         self.cleverness = cleverness    # value from 0 to 5
         self.speed = speed              # value from 0 to 5
 
-# TODO: fix a state for the agent, considera energia, bravura, velocità..
+
+# TODO: fix a state for the agent
 class Agent(threading.Thread):
 
     """ Abstract Agent implementation """

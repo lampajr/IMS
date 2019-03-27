@@ -1,7 +1,6 @@
-from agents.agent import Agent
-from agents.auctioneer import Auctioneer
-from utilities.message import *
-from utilities.task import *
+from agent import Agent
+from auctioneer import Auctioneer
+from task import *
 
 # TODO: change metric computation
 # TODO: setup state of the agent (think if add env or not)

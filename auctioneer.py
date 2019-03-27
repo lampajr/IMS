@@ -7,8 +7,8 @@ import threading as threading
 
 from termcolor import colored
 
-from utilities.message import *
-from utilities.task import get_topic
+from message import *
+from task import get_topic
 
 
 def get_time():

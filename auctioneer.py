@@ -30,9 +30,11 @@ class Auctioneer(threading.Thread):
     """ Auctioneer implementation """
 
     def __init__(self, auction_id, max_elapsed_bids_time, contract_time,
-                 min_progress, write_terminal=False, discard_task=True):
+                 min_progress, write_terminal=False, discard_task=False,
+                 details=False):
         super(Auctioneer, self).__init__()
         # message data
+        self.details = details
         self.task = None
         self.topic = None
         self.write_on_terminal = write_terminal
@@ -133,8 +135,7 @@ class Auctioneer(threading.Thread):
 
         # put current execution at sleep for 'time limit' slot
         time.sleep(self.max_elapsed_bids_time)
-        while len(self.bids) == 0:
-            time.sleep(self.max_elapsed_bids_time)
+
         # enough time was passed.. close the auction and choose the winner
         self.close_auction()
 
@@ -151,10 +152,12 @@ class Auctioneer(threading.Thread):
         if self.winner is None:
             return
 
-        self.log("there is a winner => " + str(self.winner))
+        if self.details:
+            self.log("there is a winner => " + str(self.winner))
         close_message = CloseMessage(auction_id=self.auction_id,
                                      winner_id=self.winner)
-        self.log("sending CLOSE message..")
+        if self.details:
+            self.log("sending CLOSE message..")
         pub.sendMessage(self.topic, arg1=close_message)
 
         self.start_loop_check_progress()
@@ -197,7 +200,8 @@ class Auctioneer(threading.Thread):
                                          winner_id=self.winner,
                                          renewal_id=renewal_id)
         self.last_renewal = get_time()
-        self.log("sending RENEWAL of task " + str(self.task.task_id) + " to agent " + str(self.winner) + "..")
+        if self.details:
+            self.log("sending RENEWAL of task " + str(self.task.task_id) + " to agent " + str(self.winner) + "..")
         pub.sendMessage(self.topic, arg1=renewal_message)
 
     def on_msg_received(self, arg1):
@@ -207,11 +211,13 @@ class Auctioneer(threading.Thread):
             return
 
         if arg1.msg_type == MessageType.BID:
-            self.log("new message received " + str(arg1.msg_type.name))
+            if self.details:
+                self.log("new message received " + str(arg1.msg_type.name))
             self.bid(agent_id=arg1.agent_id,
                      value=arg1.value)
         elif arg1.msg_type == MessageType.ACKNOWLEDGEMENT:
-            self.log("new message received " + str(arg1.msg_type.name))
+            if self.details:
+                self.log("new message received " + str(arg1.msg_type.name))
             self.on_acknowledge(arg1.ack_id)
 
 

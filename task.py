@@ -181,7 +181,7 @@ class DishOutTask(Task):
 
     def create_subtask(self):
         return HandlePaymentTask(task_id="h" + str(random.randint(0, 500)),
-                                 name=HandlePaymentTask.PREFIX + " " + self.name,
+                                 name=self.name,
                                  length=HandlePaymentTask.LENGTH,
                                  difficulty=HandlePaymentTask.DIFFICULTY,
                                  color=get_color(self.color),

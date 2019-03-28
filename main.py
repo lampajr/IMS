@@ -83,10 +83,22 @@ if __name__ == '__main__':
                    write_terminal=True)
 
     agent10 = Agent(agent_id=10,
-                   name="Waiter Mike",
-                   topic=Topic.DISH_OUT,
-                   contract_time=contract_time,
-                   write_terminal=True)
+                    name="Waiter Mike",
+                    topic=Topic.DISH_OUT,
+                    contract_time=contract_time,
+                    write_terminal=True)
+
+    agent11 = Agent(agent_id=11,
+                    name="Cashier Melania",
+                    topic=Topic.HANDLE_PAYMENTS,
+                    contract_time=contract_time,
+                    write_terminal=True)
+
+    agent12 = Agent(agent_id=12,
+                    name="Cashier John",
+                    topic=Topic.HANDLE_PAYMENTS,
+                    contract_time=contract_time,
+                    write_terminal=True)
 
     ##### AUCTIONEERS #####
 

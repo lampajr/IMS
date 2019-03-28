@@ -27,9 +27,10 @@ class Agent(threading.Thread):
     """ Abstract Agent implementation """
 
     # TODO: in the child classes add their specific properties
-    def __init__(self, agent_id, name, topic, contract_time, write_terminal=False):
+    def __init__(self, agent_id, name, topic, contract_time, write_terminal=False, details=False):
         super(Agent, self).__init__()
         self.write_on_terminal = write_terminal
+        self.details = details
         self.agent_name = name
         self.agent_id = agent_id
         self.topic = topic
@@ -84,14 +85,17 @@ class Agent(threading.Thread):
                     and ((get_time() - self.last_renewal) / 1000) > self.contract_time:
                 self.reset()
             if not self.occupied:
-                self.log("new message received = " + str(arg1.msg_type.name))
+                if self.details:
+                    self.log("new message received = " + str(arg1.msg_type.name))
                 self.on_announce(msg=arg1)
         elif arg1.msg_type == MessageType.RENEWAL and arg1.winner_id == self.agent_id:
-            self.log("new message received = " + str(arg1.msg_type.name))
+            if self.details:
+                self.log("new message received = " + str(arg1.msg_type.name))
             if self.current_task is not None and not self.current_task.is_terminated:
                 self.on_renewal(msg=arg1)
         elif arg1.msg_type == MessageType.CLOSE:
-            self.log("new message received = " + str(arg1.msg_type.name))
+            if self.details:
+                self.log("new message received = " + str(arg1.msg_type.name))
             self.on_close(msg=arg1)
 
     def on_announce(self, msg):
@@ -105,7 +109,8 @@ class Agent(threading.Thread):
         msg = BidMessage(auction_id=self.current_auction,
                          agent_id=self.agent_id,
                          value=fitness)
-        self.log("sending BID message..")
+        if self.details:
+            self.log("sending BID message..")
         # send bid to the auctioneer
         pub.sendMessage(topicName=self.topic.value, arg1=msg)
 
@@ -115,7 +120,8 @@ class Agent(threading.Thread):
             # or if i'm not the winner
             return
 
-        self.log("contract renewal occurred..")
+        if self.details:
+            self.log("contract renewal occurred..")
         self.last_renewal = get_time()
         self.execute_task()
 
@@ -123,7 +129,8 @@ class Agent(threading.Thread):
         msg = AcknowledgementMessage(auction_id=self.current_auction,
                                      ack_id=msg.renewal_id)
         # notify auctioneer that I'm working
-        self.log("sending ACK message..")
+        if self.details:
+            self.log("sending ACK message..")
         pub.sendMessage(topicName=self.topic.value, arg1=msg)
 
     def on_close(self, msg):
@@ -132,8 +139,9 @@ class Agent(threading.Thread):
             # or if i'm not the winner
             self.reset()
             return
-        self.log("I'm the winner!!")
-        self.log("I'm going to start the task.")
+        if self.details:
+            self.log("I'm the winner!!")
+            self.log("I'm going to start the task.")
         self.occupied = True
         self.execute_task()
 

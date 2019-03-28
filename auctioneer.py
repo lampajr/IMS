@@ -5,7 +5,7 @@ from pubsub import pub
 import time
 import threading as threading
 
-from termcolor import colored
+from termcolor import colored, cprint
 
 from message import *
 from task import get_topic
@@ -29,12 +29,14 @@ class Auctioneer(threading.Thread):
 
     """ Auctioneer implementation """
 
-    def __init__(self, auction_id, max_elapsed_bids_time, contract_time, min_progress, write_terminal=False):
+    def __init__(self, auction_id, max_elapsed_bids_time, contract_time,
+                 min_progress, write_terminal=False, discard_task=True):
         super(Auctioneer, self).__init__()
         # message data
         self.task = None
         self.topic = None
         self.write_on_terminal = write_terminal
+        self.discard_task=discard_task
 
         # auction data
         self.auction_id = auction_id
@@ -57,15 +59,19 @@ class Auctioneer(threading.Thread):
         """ compute the winner agent and returns its id """
 
         if len(self.bids) == 0:
-            self.log(message="There are no bids.. task discarded!")
-            return None
+            if self.discard_task:
+                self.log(message="There are no bids.. task discarded!")
+                return None
+            else:
+                self.announce_task()
+                return
+        else:
+            winner = None
+            for agent_id, value in self.bids:
+                if winner is None or value > winner[1]:
+                    winner = (agent_id, value)
 
-        winner = None
-        for agent_id, value in self.bids:
-            if winner is None or value > winner[1]:
-                winner = (agent_id, value)
-
-        return winner[0]
+            return winner[0]
 
     def reset_bids(self):
         self.bids = []
@@ -127,6 +133,8 @@ class Auctioneer(threading.Thread):
 
         # put current execution at sleep for 'time limit' slot
         time.sleep(self.max_elapsed_bids_time)
+        while len(self.bids) == 0:
+            time.sleep(self.max_elapsed_bids_time)
         # enough time was passed.. close the auction and choose the winner
         self.close_auction()
 
@@ -231,7 +239,7 @@ class Auctioneer(threading.Thread):
         prefix = '[' + str(self.auction_id) + ':auctioneer]'
         if color is None:
             color = self.task.color
-        res = ""
+        attrs = self.task.attrs
         if use_time:
-            res += colored('{' + str(datetime.datetime.now().time()) + '}', "grey")
-        print(res + colored(prefix + " -> " + message, color=color))
+            cprint('{' + str(datetime.datetime.now().time()) + '}', "grey", end=' ')
+        cprint(prefix + " -> " + message, color=color, attrs=attrs)

@@ -1,10 +1,9 @@
-import datetime
+import auctioneer as act
 from enum import Enum
 from abc import ABC, abstractmethod
-from termcolor import colored
+from termcolor import colored, cprint
+import datetime
 import random
-
-from auctioneer import generate_auctioneer
 
 
 class Topic(Enum):
@@ -26,6 +25,16 @@ class Subject(Enum):
     KITCHEN = 3
     TRAYS = 4
     DISH = 5
+
+
+def get_color(color):
+    lst = ['green', 'yellow', 'blue', 'magenta', 'cyan', 'white']
+    dim = len(lst) - 1
+    res = color
+    while res == color:
+        idx = random.randint(0, dim)
+        res = lst[idx]
+    return res
 
 
 def get_subjects(topic):
@@ -104,9 +113,9 @@ class Task(ABC):
             percentage = 100
 
         if self.write_on_terminal:
-            print(colored('{' + str(datetime.datetime.now().time()) + '}', color="grey", attrs=self.attrs),
-                  colored('             [' + self.name + ']' + ' execution ' + str(percentage) + '% complete..',
-                          color=self.color, attrs=self.attrs))
+            cprint('{' + str(datetime.datetime.now().time()) + '}', color="grey", attrs=[], end=' ')
+            cprint('             [' + self.name + ']' + ' execution ' + str(percentage) + '% complete..',
+                   color=self.color, attrs=self.attrs)
         else:
             with open("output.txt", "a+") as f:
                 message = '{' + str(datetime.datetime.now().time()) + '}' + "                   [" + self.name +\
@@ -117,7 +126,7 @@ class Task(ABC):
         task = self.create_subtask()
         if task is None:
             return
-        auctioneer = generate_auctioneer()
+        auctioneer = act.generate_auctioneer(write_on_terminal=self.write_on_terminal)
         auctioneer.trigger_task(task=task)
 
 
@@ -125,13 +134,15 @@ class CookTask(Task):
 
     PREFIX = "cook"
 
-    def __init__(self, task_id, name, length,difficulty, color):
+    def __init__(self, task_id, name, length,difficulty, color, write_on_terminal=False):
         super(CookTask, self).__init__(task_id=task_id,
                                        name=CookTask.PREFIX + " " + name,
                                        length=length,
                                        subjects=[Subject.COOKERS, Subject.KITCHEN, Subject.INGREDIENTS],
                                        difficulty=difficulty,
-                                       color=color)
+                                       color=color,
+                                       attrs=['dark'],
+                                       write_on_terminal=write_on_terminal)
 
 
     def metric(self, state):
@@ -142,12 +153,11 @@ class CookTask(Task):
         return random.randint(0, 100)
 
     def create_subtask(self):
-        return DishOutTask(task_id="d" + random.randint(0, 500),
+        return DishOutTask(task_id="d" + str(random.randint(0, 500)),
                            name=self.name,
                            length=DishOutTask.LENGTH,
                            difficulty=DishOutTask.DIFFICULTY,
-                           color=self.color,
-                           attrs=['underline'],
+                           color=get_color(self.color),
                            write_on_terminal=self.write_on_terminal)
 
 
@@ -157,27 +167,24 @@ class DishOutTask(Task):
     LENGTH = 150
     DIFFICULTY = 3
 
-    def __init__(self, task_id, name, length, difficulty, color, attrs, write_on_terminal):
+    def __init__(self, task_id, name, length, difficulty, color, write_on_terminal=False):
         super(DishOutTask, self).__init__(task_id=task_id,
                                           name=DishOutTask.PREFIX + " " + name,
                                           length=length,
                                           subjects=[Subject.DISH, Subject.TRAYS],
                                           difficulty=difficulty,
                                           color=color,
-                                          attrs=attrs,
                                           write_on_terminal=write_on_terminal)
 
     def metric(self, state):
         return random.randint(0, 100)
 
     def create_subtask(self):
-        return HandlePaymentTask(task_id="h" + random.randint(0, 500),
+        return HandlePaymentTask(task_id="h" + str(random.randint(0, 500)),
                                  name=HandlePaymentTask.PREFIX + " " + self.name,
                                  length=HandlePaymentTask.LENGTH,
-                                 subjects=[Subject.CASH_DESK],
                                  difficulty=HandlePaymentTask.DIFFICULTY,
-                                 color=self.color,
-                                 attrs=['bold'],
+                                 color=get_color(self.color),
                                  write_on_terminal=self.write_on_terminal)
 
 
@@ -187,14 +194,13 @@ class HandlePaymentTask(Task):
     LENGTH = 100
     DIFFICULTY = 1
 
-    def __init__(self, task_id, name, length, subjects, difficulty, color, attrs, write_on_terminal):
+    def __init__(self, task_id, name, length, difficulty, color, write_on_terminal=False):
         super(HandlePaymentTask, self).__init__(task_id=task_id,
                                                 name=HandlePaymentTask.PREFIX + " " + name,
                                                 length=length,
                                                 subjects=[Subject.CASH_DESK],
                                                 difficulty=difficulty,
                                                 color=color,
-                                                attrs=attrs,
                                                 write_on_terminal=write_on_terminal)
 
     def metric(self, state):

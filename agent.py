@@ -2,7 +2,7 @@ import datetime
 import random
 import threading
 
-from termcolor import colored
+from termcolor import colored, cprint
 
 from auctioneer import get_time
 from message import *
@@ -55,11 +55,10 @@ class Agent(threading.Thread):
 
     def execute_task(self):
         if self.current_task is not None:
+            self.log("I'm executing the " + self.current_task.name)
+            self.current_task.execute(value=random.randint(0, 100))
             if self.current_task.is_terminated:
                 self.reset()
-            else:
-                self.log("I'm executing the " + self.current_task.name)
-                self.current_task.execute(value=random.randint(0, 100))
 
     def reset(self):
         self.current_task = None
@@ -82,7 +81,7 @@ class Agent(threading.Thread):
             # limit needs to be the same or greater wrt the contract limit of
             # the auctioneer
             if self.occupied and self.last_renewal is not None \
-                    and ((get_time() - self.last_renewal) / 1000) < self.contract_time:
+                    and ((get_time() - self.last_renewal) / 1000) > self.contract_time:
                 self.reset()
             if not self.occupied:
                 self.log("new message received = " + str(arg1.msg_type.name))
@@ -144,6 +143,7 @@ class Agent(threading.Thread):
 
     ##### LOG METHODS #####
 
+
     def log(self, message, use_time=True):
         if self.write_on_terminal:
             self.terminal_log(message=message,
@@ -163,7 +163,7 @@ class Agent(threading.Thread):
     def terminal_log(self, message, use_time):
         prefix = '      [' + str(self.agent_id) + ':' + self.agent_name + ']'
         color = 'grey' if self.current_task is None else self.current_task.color
-        res = ""
+        attrs = [] if self.current_task is None else self.current_task.attrs
         if use_time:
-            res += colored('{' + str(datetime.datetime.now().time()) + '}', "grey")
-        print(res + colored(prefix + " -> " + message, color=color))
+            cprint('{' + str(datetime.datetime.now().time()) + '}', "grey", end=' ')
+        cprint(prefix + " -> " + message, color=color, attrs=attrs)

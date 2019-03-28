@@ -1,5 +1,5 @@
 from agent import Agent
-from auctioneer import Auctioneer
+from auctioneer import *
 from task import *
 
 # TODO: change metric computation
@@ -8,21 +8,23 @@ from task import *
 
 if __name__ == '__main__':
     contract_time = 40
-    min_progress = 40
+    min_progress = 10
 
     ##### TASKS ####
 
-    task1 = CookTask(task_id=1,
-                     name="Cook spaghetti",
-                     length=500,
+    task1 = CookTask(task_id="c" + str(1),
+                     name="amatriciana",
+                     length=200,
                      difficulty=5,
-                     color="green")
+                     color="green",
+                     write_on_terminal=True)
 
-    task2 = DishOutTask(task_id=2,
-                        name="Dish out spaghetti",
-                        length=200,
-                        difficulty=5,
-                        color="blue")
+    task2 = CookTask(task_id="c" + str(2),
+                     name="carbonara",
+                     length=200,
+                     difficulty=5,
+                     color="blue",
+                     write_on_terminal=True)
 
     #### AGENTS #####
 
@@ -30,38 +32,74 @@ if __name__ == '__main__':
                    name="Main-Chef",
                    topic=Topic.COOK,
                    contract_time=contract_time,
-                   contract_time=min_progress)
+                   write_terminal=True)
 
     agent2 = Agent(agent_id=2,
                    name="Sub-Chef",
                    topic=Topic.COOK,
                    contract_time=contract_time,
-                   contract_time=min_progress)
+                   write_terminal=True)
 
     agent3 = Agent(agent_id=3,
+                   name="Sub-Chef",
+                   topic=Topic.COOK,
+                   contract_time=contract_time,
+                   write_terminal=True)
+
+    agent4 = Agent(agent_id=4,
+                   name="Sub-Chef",
+                   topic=Topic.COOK,
+                   contract_time=contract_time,
+                   write_terminal=True)
+
+    agent5 = Agent(agent_id=5,
+                   name="Sub-Chef",
+                   topic=Topic.COOK,
+                   contract_time=contract_time,
+                   write_terminal=True)
+
+    agent6 = Agent(agent_id=6,
+                   name="Sub-Chef",
+                   topic=Topic.COOK,
+                   contract_time=contract_time,
+                   write_terminal=True)
+
+    agent7 = Agent(agent_id=7,
                    name="Waiter George",
                    topic=Topic.DISH_OUT,
                    contract_time=contract_time,
-                   contract_time=min_progress)
+                   write_terminal=True)
 
-    agent4 = Agent(agent_id=4,
+    agent8 = Agent(agent_id=8,
                    name="Waiter Mike",
                    topic=Topic.DISH_OUT,
                    contract_time=contract_time,
-                   contract_time=min_progress)
+                   write_terminal=True)
+
+    agent9 = Agent(agent_id=9,
+                   name="Waiter George",
+                   topic=Topic.DISH_OUT,
+                   contract_time=contract_time,
+                   write_terminal=True)
+
+    agent10 = Agent(agent_id=10,
+                   name="Waiter Mike",
+                   topic=Topic.DISH_OUT,
+                   contract_time=contract_time,
+                   write_terminal=True)
 
     ##### AUCTIONEERS #####
 
-    auctioneer1 = Auctioneer(auction_id="a1",
-                             max_elapsed_bids_time=3,
-                             contract_time=contract_time,
-                             min_progress=min_progress)
+    auctioneer1 = generate_auctioneer(contract_time=contract_time,
+                                      min_progress=min_progress,
+                                      write_on_terminal=True)
+
+    auctioneer2 = generate_auctioneer(contract_time=contract_time,
+                                      min_progress=min_progress,
+                                      write_on_terminal=True)
 
     auctioneer1.trigger_task(task=task1)
 
-    auctioneer2 = Auctioneer(auction_id="a2",
-                             max_elapsed_bids_time=3,
-                             contract_time=contract_time,
-                             min_progress=min_progress)
+    time.sleep(7)
 
     auctioneer2.trigger_task(task=task2)

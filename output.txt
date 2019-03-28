@@ -1,0 +1,122 @@
+
+{14:35:40.585538}                   [cook spaghetti] execution 11.8% complete..
+{14:35:40.586420}                   [cook spaghetti] execution 21.2% complete..
+{14:35:43.634681}                   [cook spaghetti] execution 23.6% complete..
+{14:35:51.642191}                   [cook spaghetti] execution 26.8% complete..
+{14:35:56.650178}                   [cook spaghetti] execution 36.8% complete..
+{14:35:56.650919}                   [cook spaghetti] execution 42.8% complete..
+{14:36:04.708707}                   [cook spaghetti] execution 57.0% complete..
+{14:36:04.709664}                   [cook spaghetti] execution 72.2% complete..
+{14:36:07.713515}                   [cook spaghetti] execution 73.4% complete..
+{14:36:15.724020}                   [cook spaghetti] execution 73.8% complete..
+{14:44:29.687620}[auct69:auctioneer] -> ------------------------------------------------------
+{14:44:29.687953}[auct69:auctioneer] -> new task triggered : dish out cook spaghetti
+{14:44:29.688137}[auct69:auctioneer] -> sending TASK ANNOUNCEMENT on dish_out topic
+{14:44:29.688290}[auct69:auctioneer] -> awaiting bids..
+{14:44:29.689347}[auct69:auctioneer] -> new message received BID
+{14:44:29.689686}[auct69:auctioneer] -> bid received from agent 3, value of 81
+{14:44:29.690382}[auct69:auctioneer] -> new message received BID
+{14:44:29.690572}[auct69:auctioneer] -> bid received from agent 4, value of 11
+{14:44:34.691577}[auct69:auctioneer] -> there is a winner => 3
+{14:44:34.691988}[auct69:auctioneer] -> sending CLOSE message..
+{14:44:34.740296}[auct69:auctioneer] -> sending RENEWAL of task d134 to agent 3..
+{14:44:34.741276}[auct69:auctioneer] -> new message received ACKNOWLEDGEMENT
+{14:44:37.745045}[auct69:auctioneer] -> sending RENEWAL of task d134 to agent 3..
+{14:44:37.746148}[auct69:auctioneer] -> new message received ACKNOWLEDGEMENT
+{14:44:40.749466}[auct69:auctioneer] -> I need to reallocate the dish out cook spaghetti task cause the progress wasn't enough!
+{14:44:40.749600}[auct696:auctioneer] -> ------------------------------------------------------
+{14:44:40.749645}[auct696:auctioneer] -> task reallocation : dish out cook spaghetti
+{14:44:40.749682}[auct696:auctioneer] -> sending TASK ANNOUNCEMENT on dish_out topic
+{14:44:40.749715}[auct696:auctioneer] -> awaiting bids..
+{14:44:40.749926}[auct696:auctioneer] -> new message received BID
+{14:44:40.749970}[auct696:auctioneer] -> bid received from agent 3, value of 26
+{14:44:40.750092}[auct696:auctioneer] -> new message received BID
+{14:44:40.750132}[auct696:auctioneer] -> bid received from agent 4, value of 32
+{14:45:41.442107}[auct286:auctioneer] -> ------------------------------------------------------
+{14:45:41.442426}[auct286:auctioneer] -> new task triggered : dish out cook spaghetti
+{14:45:41.442614}[auct286:auctioneer] -> sending TASK ANNOUNCEMENT on dish_out topic
+{14:45:41.442705}[auct286:auctioneer] -> awaiting bids..
+{14:45:41.442915}[auct286:auctioneer] -> new message received BID
+{14:45:41.442976}[auct286:auctioneer] -> bid received from agent 3, value of 16
+{14:45:41.443139}[auct286:auctioneer] -> new message received BID
+{14:45:41.443195}[auct286:auctioneer] -> bid received from agent 4, value of 28
+{14:45:46.448821}[auct286:auctioneer] -> there is a winner => 4
+{14:45:46.449236}[auct286:auctioneer] -> sending CLOSE message..
+{14:45:46.497362}[auct286:auctioneer] -> sending RENEWAL of task d169 to agent 4..
+{14:45:46.498222}[auct286:auctioneer] -> new message received ACKNOWLEDGEMENT
+{14:45:49.501868}[auct286:auctioneer] -> sending RENEWAL of task d169 to agent 4..
+{14:45:49.502757}[auct286:auctioneer] -> new message received ACKNOWLEDGEMENT
+{14:45:52.506166}[auct286:auctioneer] -> sending RENEWAL of task d169 to agent 4..
+{14:45:52.506762}[auct286:auctioneer] -> new message received ACKNOWLEDGEMENT
+{14:45:55.510350}[auct286:auctioneer] -> I need to reallocate the dish out cook spaghetti task cause the progress wasn't enough!
+{14:45:55.510835}[auct28612:auctioneer] -> ------------------------------------------------------
+{14:45:55.511032}[auct28612:auctioneer] -> task reallocation : dish out cook spaghetti
+{14:45:55.511232}[auct28612:auctioneer] -> sending TASK ANNOUNCEMENT on dish_out topic
+{14:45:55.511379}[auct28612:auctioneer] -> awaiting bids..
+{14:45:55.512144}[auct28612:auctioneer] -> new message received BID
+{14:45:55.512329}[auct28612:auctioneer] -> bid received from agent 3, value of 78
+{14:45:55.512933}[auct28612:auctioneer] -> new message received BID
+{14:45:55.513112}[auct28612:auctioneer] -> bid received from agent 4, value of 79
+{14:46:00.518717}[auct28612:auctioneer] -> there is a winner => 4
+{14:46:00.519041}[auct28612:auctioneer] -> sending CLOSE message..
+{14:46:00.521287}[auct496:auctioneer] -> ------------------------------------------------------
+{14:46:00.521825}[auct28612:auctioneer] -> dish out cook spaghetti task terminated!
+{14:46:00.522588}[auct496:auctioneer] -> new task triggered : pay pay dish out cook spaghetti
+{14:46:00.522904}[auct496:auctioneer] -> sending TASK ANNOUNCEMENT on handle_payments topic
+{14:46:00.523062}[auct496:auctioneer] -> awaiting bids..
+{14:46:05.528970}[auct496:auctioneer] -> There are no bids.. task discarded!
+{15:34:25.707540}[a2:auctioneer] -> ------------------------------------------------------
+{15:34:25.707670}[a2:auctioneer] -> new task triggered : cook carbonara
+{15:34:25.707819}[a2:auctioneer] -> sending TASK ANNOUNCEMENT on cook topic
+{15:34:25.707893}[a2:auctioneer] -> awaiting bids..
+{15:34:28.711476}[a2:auctioneer] -> There are no bids.. task discarded!
+{15:43:27.997666}                   [cook carbonara] execution 20.5% complete..
+{15:43:27.998970}                   [cook carbonara] execution 62.5% complete..
+{15:43:39.020218}                   [cook carbonara] execution 65.0% complete..
+{15:43:44.034793}                   [cook carbonara] execution 84.0% complete..
+{15:43:54.059543}                   [cook carbonara] execution 100% complete..
+{15:43:54.062350}[auct14:auctioneer] -> ------------------------------------------------------
+{15:43:54.066312}[auct14:auctioneer] -> new task triggered : dish out cook carbonara
+{15:43:54.066716}[auct14:auctioneer] -> sending TASK ANNOUNCEMENT on dish_out topic
+{15:43:54.067571}[auct14:auctioneer] -> awaiting bids..
+{15:43:54.070024}[auct14:auctioneer] -> new message received BID
+{15:43:54.070636}[auct14:auctioneer] -> bid received from agent 7, value of 93
+{15:43:54.072393}[auct14:auctioneer] -> new message received BID
+{15:43:54.072971}[auct14:auctioneer] -> bid received from agent 8, value of 60
+{15:43:54.074158}[auct14:auctioneer] -> new message received BID
+{15:43:54.074304}[auct14:auctioneer] -> bid received from agent 9, value of 70
+{15:43:54.074787}[auct14:auctioneer] -> new message received BID
+{15:43:54.074950}[auct14:auctioneer] -> bid received from agent 10, value of 71
+{15:43:59.080496}[auct14:auctioneer] -> there is a winner => 7
+{15:43:59.082301}[auct14:auctioneer] -> sending CLOSE message..
+{15:43:59.091248}                   [dish out cook carbonara] execution 57.333333333333336% complete..
+{15:43:59.091937}[auct14:auctioneer] -> sending RENEWAL of task d386 to agent 7..
+{15:43:59.092785}                   [dish out cook carbonara] execution 75.33333333333333% complete..
+{15:43:59.093265}[auct14:auctioneer] -> new message received ACKNOWLEDGEMENT
+{15:44:02.097023}[auct14:auctioneer] -> I need to reallocate the dish out cook carbonara task cause the progress wasn't enough!
+{15:44:02.097482}[auct1440:auctioneer] -> ------------------------------------------------------
+{15:44:02.097691}[auct1440:auctioneer] -> task reallocation : dish out cook carbonara
+{15:44:02.097855}[auct1440:auctioneer] -> sending TASK ANNOUNCEMENT on dish_out topic
+{15:44:02.098004}[auct1440:auctioneer] -> awaiting bids..
+{15:44:02.098845}[auct1440:auctioneer] -> new message received BID
+{15:44:02.099037}[auct1440:auctioneer] -> bid received from agent 7, value of 25
+{15:44:02.099268}[auct1440:auctioneer] -> new message received BID
+{15:44:02.099326}[auct1440:auctioneer] -> bid received from agent 8, value of 87
+{15:44:02.099504}[auct1440:auctioneer] -> new message received BID
+{15:44:02.099559}[auct1440:auctioneer] -> bid received from agent 9, value of 41
+{15:44:02.099748}[auct1440:auctioneer] -> new message received BID
+{15:44:02.099804}[auct1440:auctioneer] -> bid received from agent 10, value of 74
+{15:44:07.105724}[auct1440:auctioneer] -> there is a winner => 8
+{15:44:07.106076}[auct1440:auctioneer] -> sending CLOSE message..
+{15:44:07.108589}[auct101:auctioneer] -> ------------------------------------------------------
+{15:44:07.109059}                   [dish out cook carbonara] execution 100% complete..
+{15:44:07.109822}[auct101:auctioneer] -> new task triggered : pay pay dish out cook carbonara
+{15:44:07.110276}[auct1440:auctioneer] -> dish out cook carbonara task terminated!
+{15:44:07.110873}[auct101:auctioneer] -> sending TASK ANNOUNCEMENT on handle_payments topic
+{15:44:07.111111}[auct101:auctioneer] -> awaiting bids..
+{15:44:12.114777}[auct101:auctioneer] -> There are no bids.. task discarded!
+{15:55:51.278508}                   [cook carbonara] execution 44.5% complete..
+{15:55:51.279714}                   [cook carbonara] execution 48.0% complete..
+{15:57:03.355367}                   [cook carbonara] execution 31.5% complete..
+{15:57:03.356410}                   [cook carbonara] execution 48.5% complete..
+{15:57:06.361556}                   [cook carbonara] execution 77.5% complete..

@@ -112,6 +112,6 @@ if __name__ == '__main__':
 
     auctioneer1.trigger_task(task=task1)
 
-    time.sleep(7)
+    time.sleep(5)
 
     auctioneer2.trigger_task(task=task2)

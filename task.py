@@ -1,3 +1,5 @@
+import threading
+
 import auctioneer as act
 from enum import Enum
 from abc import ABC, abstractmethod
@@ -108,12 +110,15 @@ class Task(ABC):
 
         """ print the progress of the current task execution """
 
+        lo = threading.Lock()
+        lo.acquire()
+
         percentage = (self.progress * 100) / self.length
         if percentage > 100:
             percentage = 100
 
-        if self.write_on_terminal:
-            cprint('{' + str(datetime.datetime.now().time()) + '}', color="grey", attrs=[], end=' ')
+        elif self.write_on_terminal:
+            #cprint('{' + str(datetime.datetime.now().time()) + '}', color="grey", attrs=[], end=' ')
             cprint('             [' + self.name + ']' + ' execution ' + str(percentage) + '% complete..',
                    color=self.color, attrs=self.attrs)
         else:
@@ -121,6 +126,7 @@ class Task(ABC):
                 message = '{' + str(datetime.datetime.now().time()) + '}' + "                   [" + self.name +\
                           "] execution " + str(percentage) + "% complete..\n"
                 f.write(message)
+        lo.release()
 
     def trigger_subtask(self):
         task = self.create_subtask()

@@ -224,7 +224,7 @@ class Auctioneer(threading.Thread):
     ##### LOG METHODS #####
 
 
-    def log(self, message, color=None, use_time=True):
+    def log(self, message, color=None, use_time=False):
         if self.write_on_terminal:
             self.terminal_log(message=message,
                               color=color,
@@ -242,6 +242,8 @@ class Auctioneer(threading.Thread):
             f.write(res + prefix + " -> " + message + "\n")
 
     def terminal_log(self, message, color, use_time):
+        lo = threading.Lock()
+        lo.acquire()
         prefix = '[' + str(self.auction_id) + ':auctioneer]'
         if color is None:
             color = self.task.color
@@ -249,3 +251,4 @@ class Auctioneer(threading.Thread):
         if use_time:
             cprint('{' + str(datetime.datetime.now().time()) + '}', "grey", end=' ')
         cprint(prefix + " -> " + message, color=color, attrs=attrs)
+        lo.release()

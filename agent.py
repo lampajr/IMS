@@ -152,7 +152,7 @@ class Agent(threading.Thread):
     ##### LOG METHODS #####
 
 
-    def log(self, message, use_time=True):
+    def log(self, message, use_time=False):
         if self.write_on_terminal:
             self.terminal_log(message=message,
                               use_time=use_time)
@@ -169,9 +169,12 @@ class Agent(threading.Thread):
             f.write(res + prefix + " -> " + message + "\n")
 
     def terminal_log(self, message, use_time):
+        lo = threading.Lock()
+        lo.acquire()
         prefix = '      [' + str(self.agent_id) + ':' + self.agent_name + ']'
         color = 'grey' if self.current_task is None else self.current_task.color
         attrs = [] if self.current_task is None else self.current_task.attrs
         if use_time:
             cprint('{' + str(datetime.datetime.now().time()) + '}', "grey", end=' ')
         cprint(prefix + " -> " + message, color=color, attrs=attrs)
+        lo.release()

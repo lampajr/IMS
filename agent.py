@@ -27,8 +27,9 @@ class Agent(threading.Thread):
     """ Abstract Agent implementation """
 
     # TODO: in the child classes add their specific properties
-    def __init__(self, agent_id, name, topic, contract_time, min_progress):
+    def __init__(self, agent_id, name, topic, contract_time, write_terminal=False):
         super(Agent, self).__init__()
+        self.write_on_terminal = write_terminal
         self.agent_name = name
         self.agent_id = agent_id
         self.topic = topic
@@ -38,9 +39,9 @@ class Agent(threading.Thread):
         self.current_task = None
         self.current_auction = None
         self.last_renewal = None
-        self.min_progress = min_progress
         self.contract_time = contract_time
-        self.start()
+        #self.start()
+        self.run()
 
     def run(self):
         self.log("I'm agent " + self.agent_name + " and I'm subscribing to the following topic = " + self.topic.value)
@@ -80,7 +81,8 @@ class Agent(threading.Thread):
             # this means that the auctioneer has reallocated my task
             # limit needs to be the same or greater wrt the contract limit of
             # the auctioneer
-            if self.occupied and (self.current_task.progress - self.current_task.previous_progress) < self.min_progress:
+            if self.occupied and self.last_renewal is not None \
+                    and ((get_time() - self.last_renewal) / 1000) < self.contract_time:
                 self.reset()
             if not self.occupied:
                 self.log("new message received = " + str(arg1.msg_type.name))
@@ -139,11 +141,29 @@ class Agent(threading.Thread):
     def check_msg(self, msg):
         return msg.auction_id != self.current_auction or msg.winner_id != self.agent_id
 
-    def log(self, message, use_time=False):
+
+    ##### LOG METHODS #####
+
+    def log(self, message, use_time=True):
+        if self.write_on_terminal:
+            self.terminal_log(message=message,
+                              use_time=use_time)
+        else:
+            self.file_log(message=message,
+                          use_time=use_time)
+
+    def file_log(self, message, use_time):
+        with open("output.txt", "a+") as f:
+            prefix = '          [' + str(self.agent_id) + ':' + self.agent_name + ']'
+            res = ""
+            if use_time:
+                res += '{' + str(datetime.datetime.now().time()) + '}'
+            f.write(res + prefix + " -> " + message + "\n")
+
+    def terminal_log(self, message, use_time):
         prefix = '      [' + str(self.agent_id) + ':' + self.agent_name + ']'
         color = 'grey' if self.current_task is None else self.current_task.color
         res = ""
         if use_time:
             res += colored('{' + str(datetime.datetime.now().time()) + '}', "grey")
         print(res + colored(prefix + " -> " + message, color=color))
-

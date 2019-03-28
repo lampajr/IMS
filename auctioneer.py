@@ -15,15 +15,26 @@ def get_time():
     return int(round(time.time() * 1000))
 
 
+def generate_auctioneer(max_elapsed_bids_time=5, contract_time=10,
+                        min_progress=30, write_on_terminal=False, max_id=500):
+
+    return Auctioneer(auction_id="auct" + str(random.randint(0, max_id)),
+                      max_elapsed_bids_time=int(max_elapsed_bids_time),
+                      contract_time=int(contract_time),
+                      min_progress=int(min_progress),
+                      write_terminal=write_on_terminal)
+
+
 class Auctioneer(threading.Thread):
 
     """ Auctioneer implementation """
 
-    def __init__(self, auction_id, max_elapsed_bids_time, contract_time, min_progress):
+    def __init__(self, auction_id, max_elapsed_bids_time, contract_time, min_progress, write_terminal=False):
         super(Auctioneer, self).__init__()
         # message data
         self.task = None
         self.topic = None
+        self.write_on_terminal = write_terminal
 
         # auction data
         self.auction_id = auction_id
@@ -103,7 +114,13 @@ class Auctioneer(threading.Thread):
         self.reset_bids()
         announcement_message = AnnouncementMessage(auction_id=self.auction_id,
                                                    task=self.task)
-        self.log("new task triggered : " + str(self.task.name))
+        self.log("------------------------------------------------------")
+        if self.task.progress == 0:
+            # new task
+            self.log("new task triggered : " + str(self.task.name))
+        else:
+            # task re-allocation
+            self.log("task reallocation : " + str(self.task.name))
         self.log("sending TASK ANNOUNCEMENT on " + self.topic + " topic")
         self.log("awaiting bids..")
         pub.sendMessage(self.topic, arg1=announcement_message)
@@ -172,7 +189,7 @@ class Auctioneer(threading.Thread):
                                          winner_id=self.winner,
                                          renewal_id=renewal_id)
         self.last_renewal = get_time()
-        self.log("sending RENEWAL of task" + str(self.task.task_id) + " to agent " + str(self.winner) + "..")
+        self.log("sending RENEWAL of task " + str(self.task.task_id) + " to agent " + str(self.winner) + "..")
         pub.sendMessage(self.topic, arg1=renewal_message)
 
     def on_msg_received(self, arg1):
@@ -189,7 +206,28 @@ class Auctioneer(threading.Thread):
             self.log("new message received " + str(arg1.msg_type.name))
             self.on_acknowledge(arg1.ack_id)
 
-    def log(self, message, color=None, use_time=False):
+
+    ##### LOG METHODS #####
+
+
+    def log(self, message, color=None, use_time=True):
+        if self.write_on_terminal:
+            self.terminal_log(message=message,
+                              color=color,
+                              use_time=use_time)
+        else:
+            self.file_log(message=message,
+                          use_time=use_time)
+
+    def file_log(self, message, use_time):
+        with open("output.txt", "a+") as f:
+            prefix = '[' + str(self.auction_id) + ':auctioneer]'
+            res = ""
+            if use_time:
+                res += '{' + str(datetime.datetime.now().time()) + '}'
+            f.write(res + prefix + " -> " + message + "\n")
+
+    def terminal_log(self, message, color, use_time):
         prefix = '[' + str(self.auction_id) + ':auctioneer]'
         if color is None:
             color = self.task.color

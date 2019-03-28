@@ -1,5 +1,5 @@
 from agent import Agent
-from auctioneer import Auctioneer
+from auctioneer import Auctioneer, generate_auctioneer
 from task import *
 import random
 
@@ -8,6 +8,7 @@ MAX_N = 500
 
 agents = []
 tasks = []
+write_on_terminal = False
 
 
 def trigger_task():
@@ -24,7 +25,7 @@ def trigger_task():
         topic = input()
 
     if topic == "a":
-        task = CookTask(task_id="t" + str(random.randint(0, MAX_N)),
+        task = CookTask(task_id="c" + str(random.randint(0, MAX_N)),
                         name=name,
                         length=int(length),
                         difficulty=5,
@@ -32,7 +33,7 @@ def trigger_task():
     elif topic == "b":
         task = None
     else:
-        task = DishOutTask(task_id=str(random.randint(0, MAX_N)),
+        task = DishOutTask(task_id="d" + str(random.randint(0, MAX_N)),
                            name=name,
                            length=int(length),
                            difficulty=5,
@@ -42,14 +43,7 @@ def trigger_task():
     auctioneer = generate_auctioneer()
     auctioneer.trigger_task(task=task)
 
-
-def generate_auctioneer():
-    max_elapsed_bids_time, contract_time, min_progress = 5, 10, 30
-
-    return Auctioneer(auction_id="auct" + str(random.randint(0, MAX_N)),
-                      max_elapsed_bids_time=int(max_elapsed_bids_time),
-                      contract_time=int(contract_time),
-                      min_progress=int(min_progress))
+    print("\nNew task triggered!\n")
 
 
 def insert_agent():
@@ -78,9 +72,9 @@ def insert_agent():
     agents.append(Agent(agent_id="ag" + str(random.randint(0, MAX_N)),
                         name=name,
                         topic=topic,
-                        contract_time=int(contract_time),
-                        min_progress=int(min_progress)))
-    print("New agent correctly inserted in the environment!")
+                        contract_time=int(min_progress),
+                        write_terminal=write_on_terminal))
+    print("\nNew agent correctly inserted in the environment!\n")
 
 
 def invalidate_agent():
@@ -100,8 +94,11 @@ def restore_agent():
 
     agents[pos].restore()
 
+
 if __name__ == '__main__':
     cmd = None
+
+    # create default agents
 
     try:
         while cmd != "0":
@@ -110,6 +107,7 @@ if __name__ == '__main__':
             print("2) --> Trigger a new task")
             print("3) --> Invalidate agent")
             print("4) --> Restore agent")
+            print("5) --> write_log/write_terminal")
             print("h) --> Repeat menu")
             print("0) --> exit")
 
@@ -123,6 +121,8 @@ if __name__ == '__main__':
                 invalidate_agent()
             elif cmd == "4":
                 restore_agent()
+            elif cmd == "5":
+                write_on_terminal = not write_on_terminal
             elif cmd == "h":
                 continue
 

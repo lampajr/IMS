@@ -30,25 +30,25 @@ if __name__ == '__main__':
                    name="Main-Chef",
                    topic=Topic.COOK,
                    contract_time=contract_time,
-                   min_progress=min_progress)
+                   contract_time=min_progress)
 
     agent2 = Agent(agent_id=2,
                    name="Sub-Chef",
                    topic=Topic.COOK,
                    contract_time=contract_time,
-                   min_progress=min_progress)
+                   contract_time=min_progress)
 
     agent3 = Agent(agent_id=3,
                    name="Waiter George",
                    topic=Topic.DISH_OUT,
                    contract_time=contract_time,
-                   min_progress=min_progress)
+                   contract_time=min_progress)
 
     agent4 = Agent(agent_id=4,
                    name="Waiter Mike",
                    topic=Topic.DISH_OUT,
                    contract_time=contract_time,
-                   min_progress=min_progress)
+                   contract_time=min_progress)
 
     ##### AUCTIONEERS #####
 

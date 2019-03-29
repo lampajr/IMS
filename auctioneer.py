@@ -15,13 +15,14 @@ def get_time():
     return int(round(time.time() * 1000))
 
 
-def generate_auctioneer(max_elapsed_bids_time=5, contract_time=10,
+def generate_auctioneer(max_elapsed_bids_time=5, contract_time=10, details=False,
                         min_progress=30, write_on_terminal=False, max_id=500):
 
     return Auctioneer(auction_id="auctioneer" + str(random.randint(0, max_id)),
                       max_elapsed_bids_time=int(max_elapsed_bids_time),
                       contract_time=int(contract_time),
                       min_progress=int(min_progress),
+                      details=details,
                       write_terminal=write_on_terminal)
 
 

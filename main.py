@@ -47,7 +47,7 @@ if __name__ == '__main__':
                      color="blue",
                      write_on_terminal=True)
 
-    tasks = [task1]#, task2, task3, task4, task5]
+    tasks = [task1, task2, task3, task4, task5]
 
     #### AGENTS #####
 
@@ -125,24 +125,9 @@ if __name__ == '__main__':
 
     ##### AUCTIONEERS #####
 
-    """auctioneer1 = generate_auctioneer(contract_time=contract_time,
-                                      min_progress=min_progress,
-                                      write_on_terminal=True)
-
-    auctioneer2 = generate_auctioneer(contract_time=contract_time,
-                                      min_progress=min_progress,
-                                      write_on_terminal=True)
-
-    auctioneer1.trigger_task(task=task1)
-
-    time.sleep(5)
-
-    auctioneer2.trigger_task(task=task2)"""
-
     for t in tasks:
         auct = generate_auctioneer(contract_time=contract_time,
                                    min_progress=min_progress,
-                                   write_on_terminal=True,
-                                   details=True)
+                                   write_on_terminal=True)
         auct.trigger_task(t)
         time.sleep(5)

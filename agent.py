@@ -1,6 +1,7 @@
 import datetime
 import random
 import threading
+import time
 
 from termcolor import colored, cprint
 
@@ -13,12 +14,13 @@ def update_state(agent):
     return None
 
 
-class State:
+class Ability:
 
-    def __init__(self, energy, cleverness, speed):
-        self.energy = energy            # max value 100%
-        self.cleverness = cleverness    # value from 0 to 5
-        self.speed = speed              # value from 0 to 5
+    def __init__(self, energy=100, cleverness=0, speed=0, stars=0):
+        self.energy = energy            # value from 0 to 100
+        self.cleverness = cleverness    # value from 0 to 100
+        self.speed = speed              # value from 0 to 100
+        self.stars = stars              # michelin's star 0 to 3
 
 
 # TODO: fix a state for the agent
@@ -26,8 +28,7 @@ class Agent(threading.Thread):
 
     """ Abstract Agent implementation """
 
-    # TODO: in the child classes add their specific properties
-    def __init__(self, agent_id, name, topic, contract_time, write_terminal=False, details=False):
+    def __init__(self, agent_id, name, topic, contract_time, ability=None, write_terminal=False, details=False):
         super(Agent, self).__init__()
         self.write_on_terminal = write_terminal
         self.details = details
@@ -36,7 +37,7 @@ class Agent(threading.Thread):
         self.topic = topic
         self.invalidated = False
         self.occupied = False
-        self.state = None
+        self.ability = ability
         self.current_task = None
         self.current_auction = None
         self.last_renewal = None
@@ -69,7 +70,7 @@ class Agent(threading.Thread):
         self.current_auction = None
         self.occupied = False
         self.last_renewal = None
-        self.state = update_state(self)
+        self.ability = update_state(self)
 
     def body(self, arg1):
 
@@ -81,13 +82,19 @@ class Agent(threading.Thread):
             # so discard everything
             return
 
+        # this means that the auctioneer has reallocated my task
+        # limit needs to be the same or greater wrt the contract limit of
+        # the auctioneer
+        if self.occupied and self.last_renewal is not None \
+                and ((get_time() - self.last_renewal) / 1000) > self.contract_time:
+            self.reset()
+            # invalidate myself for some time
+            self.invalidate()
+            self.log(message="I'm failed!")
+            time.sleep(3)
+            self.restore()
+
         if arg1.msg_type == MessageType.ANNOUNCEMENT:
-            # this means that the auctioneer has reallocated my task
-            # limit needs to be the same or greater wrt the contract limit of
-            # the auctioneer
-            if self.occupied and self.last_renewal is not None \
-                    and ((get_time() - self.last_renewal) / 1000) > self.contract_time:
-                self.reset()
             if not self.occupied:
                 if self.details:
                     self.log("new message received = " + str(arg1.msg_type.name))
@@ -107,7 +114,7 @@ class Agent(threading.Thread):
         self.current_task = msg.task
         self.occupied = True
 
-        fitness = self.current_task.metric(state=self.state)
+        fitness = self.current_task.metric(ability=self.ability)
 
         # generate bid message
         msg = BidMessage(auction_id=self.current_auction,

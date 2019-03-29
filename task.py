@@ -96,7 +96,7 @@ class Task(ABC):
         self.print_progress()
 
     @abstractmethod
-    def metric(self, state):
+    def metric(self, ability):
 
         """ metric function used by agent to compute its fitness
             based on the current state of the agent itself """
@@ -151,12 +151,16 @@ class CookTask(Task):
                                        write_on_terminal=write_on_terminal)
 
 
-    def metric(self, state):
+    def metric(self, ability):
 
         """ for this application I've thought to consider random fitness metric
             in order to have an unpredictable behavior """
 
-        return random.randint(0, 100)
+        # linear combination among all abilities but cleverness
+        deterministic_fitness = 0.5 * 20 * ability.stars + 0.4 * ability.energy + 0.1 * ability.speed
+        random_fitness = random.randint(0, 30)
+
+        return deterministic_fitness + random_fitness
 
     def create_subtask(self):
         return DishOutTask(task_id="d" + str(random.randint(0, 500)),
@@ -182,8 +186,15 @@ class DishOutTask(Task):
                                           color=color,
                                           write_on_terminal=write_on_terminal)
 
-    def metric(self, state):
-        return random.randint(0, 100)
+    def metric(self, ability):
+        """ for this application I've thought to consider random fitness metric
+                    in order to have an unpredictable behavior """
+
+        # linear combination among all abilities but stars
+        deterministic_fitness = 0.1 * ability.cleverness + 0.4 * ability.energy + 0.5 * ability.speed
+        random_fitness = random.randint(0, 20)
+
+        return deterministic_fitness + random_fitness
 
     def create_subtask(self):
         return HandlePaymentTask(task_id="h" + str(random.randint(0, 500)),
@@ -209,8 +220,15 @@ class HandlePaymentTask(Task):
                                                 color=color,
                                                 write_on_terminal=write_on_terminal)
 
-    def metric(self, state):
-        return random.randint(0, 100)
+    def metric(self, ability):
+        """ for this application I've thought to consider random fitness metric
+                    in order to have an unpredictable behavior """
+
+        # linear combination among all abilities but stars
+        deterministic_fitness = 0.7 * ability.cleverness + 0.2 * ability.energy + 0.1 * ability.speed
+        random_fitness = random.randint(0, 30)
+
+        return deterministic_fitness + random_fitness
 
     def create_subtask(self):
         return None

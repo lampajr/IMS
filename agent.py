@@ -41,8 +41,8 @@ class Agent(threading.Thread):
         self.current_auction = None
         self.last_renewal = None
         self.contract_time = contract_time
-        #self.start()
-        self.run()
+        self.start()
+        #self.run()
 
     def run(self):
         self.log("I'm agent " + self.agent_name + " and I'm subscribing to the following topic = " + self.topic.value)
@@ -57,7 +57,10 @@ class Agent(threading.Thread):
     def execute_task(self):
         if self.current_task is not None:
             self.log("I'm executing the " + self.current_task.name)
-            self.current_task.execute(value=random.randint(0, 100))
+            try:
+                self.current_task.execute(value=random.randint(0, 100))
+            except AttributeError:
+                pass
             if self.current_task.is_terminated:
                 self.reset()
 
@@ -65,6 +68,7 @@ class Agent(threading.Thread):
         self.current_task = None
         self.current_auction = None
         self.occupied = False
+        self.last_renewal = None
         self.state = update_state(self)
 
     def body(self, arg1):

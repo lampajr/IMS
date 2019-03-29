@@ -21,10 +21,33 @@ if __name__ == '__main__':
 
     task2 = CookTask(task_id="c" + str(2),
                      name="carbonara",
+                     length=300,
+                     difficulty=5,
+                     color="blue",
+                     write_on_terminal=True)
+
+    task3 = CookTask(task_id="c" + str(2),
+                     name="risotto",
+                     length=500,
+                     difficulty=5,
+                     color="blue",
+                     write_on_terminal=True)
+
+    task4 = CookTask(task_id="c" + str(2),
+                     name="puttanesca",
                      length=200,
                      difficulty=5,
                      color="blue",
                      write_on_terminal=True)
+
+    task5 = CookTask(task_id="c" + str(2),
+                     name="scoglio",
+                     length=250,
+                     difficulty=5,
+                     color="blue",
+                     write_on_terminal=True)
+
+    tasks = [task1, task2, task3, task4, task5]
 
     #### AGENTS #####
 
@@ -102,7 +125,7 @@ if __name__ == '__main__':
 
     ##### AUCTIONEERS #####
 
-    auctioneer1 = generate_auctioneer(contract_time=contract_time,
+    """auctioneer1 = generate_auctioneer(contract_time=contract_time,
                                       min_progress=min_progress,
                                       write_on_terminal=True)
 
@@ -114,4 +137,11 @@ if __name__ == '__main__':
 
     time.sleep(5)
 
-    auctioneer2.trigger_task(task=task2)
+    auctioneer2.trigger_task(task=task2)"""
+
+    for t in tasks:
+        auct = generate_auctioneer(contract_time=contract_time,
+                                      min_progress=min_progress,
+                                      write_on_terminal=True)
+        auct.trigger_task(t)
+        time.sleep(5)

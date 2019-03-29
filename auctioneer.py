@@ -168,7 +168,7 @@ class Auctioneer(threading.Thread):
                 # the ack msg related to the previous renewal was not yet received
                 self.reallocate(log_msg=" task cause no ack received!")
             self.send_renewal()
-            time.sleep(3)
+            time.sleep(4)
 
         if not self.task.is_terminated:
             self.reallocate(log_msg=" task cause the progress wasn't enough!")

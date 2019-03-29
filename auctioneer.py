@@ -18,7 +18,7 @@ def get_time():
 def generate_auctioneer(max_elapsed_bids_time=5, contract_time=10,
                         min_progress=30, write_on_terminal=False, max_id=500):
 
-    return Auctioneer(auction_id="auct" + str(random.randint(0, max_id)),
+    return Auctioneer(auction_id="auctioneer" + str(random.randint(0, max_id)),
                       max_elapsed_bids_time=int(max_elapsed_bids_time),
                       contract_time=int(contract_time),
                       min_progress=int(min_progress),
@@ -94,7 +94,8 @@ class Auctioneer(threading.Thread):
 
         if self.auction_opened:
             self.bids.append((agent_id, value))
-            self.log("bid received from agent " + str(agent_id) + ", value of " + str(value))
+            if self.details:
+                self.log("bid received from agent " + str(agent_id) + ", value of " + str(value))
 
     def on_acknowledge(self, ack_id):
 
@@ -122,7 +123,7 @@ class Auctioneer(threading.Thread):
         self.reset_bids()
         announcement_message = AnnouncementMessage(auction_id=self.auction_id,
                                                    task=self.task)
-        self.log("------------------------------------------------------")
+        self.log("************************************")
         if self.task.progress == 0:
             # new task
             self.log("new task triggered : " + str(self.task.name))
@@ -152,8 +153,7 @@ class Auctioneer(threading.Thread):
         if self.winner is None:
             return
 
-        if self.details:
-            self.log("there is a winner => " + str(self.winner))
+        self.log("there is a winner => " + str(self.winner))
         close_message = CloseMessage(auction_id=self.auction_id,
                                      winner_id=self.winner)
         if self.details:
@@ -244,7 +244,7 @@ class Auctioneer(threading.Thread):
     def terminal_log(self, message, color, use_time):
         lo = threading.Lock()
         lo.acquire()
-        prefix = '[' + str(self.auction_id) + ':auctioneer]'
+        prefix = '[' + str(self.auction_id) +']'
         if color is None:
             color = self.task.color
         attrs = self.task.attrs

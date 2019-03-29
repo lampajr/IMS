@@ -60,17 +60,16 @@ class Agent(threading.Thread):
             self.log("I'm executing the " + self.current_task.name)
             try:
                 self.current_task.execute(value=random.randint(0, 100))
+                if self.current_task.is_terminated:
+                    self.reset()
             except AttributeError:
                 pass
-            if self.current_task.is_terminated:
-                self.reset()
 
     def reset(self):
         self.current_task = None
         self.current_auction = None
         self.occupied = False
         self.last_renewal = None
-        self.ability = update_state(self)
 
     def body(self, arg1):
 

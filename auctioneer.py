@@ -68,3 +68,9 @@ class Auctioneer(threading.Thread):
 
         pass
 
+    def __add_bid(self, agent_id, value):
+        if self.opened:
+            self.bids.append((agent_id, value))
+
+    def __clear_bids(self):
+        self.bids.clear()

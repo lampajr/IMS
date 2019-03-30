@@ -13,7 +13,14 @@ class Logger:
 
     ERROR = "red"
 
-    def __init__(self, name, color, attrs, write_on_terminal, verbose, level):
+    def __init__(self,
+                 name,
+                 color,
+                 attrs,
+                 write_on_terminal,
+                 verbose,
+                 level,
+                 use_time=True):
         super(Logger, self).__init__()
         self.name = name.upper()
         self.color = color
@@ -23,6 +30,7 @@ class Logger:
         self.write_on_terminal = write_on_terminal
         self.verbose = verbose
         self.level = level
+        self.use_time = use_time
 
     def log(self, message, kind="d", level=0):
 

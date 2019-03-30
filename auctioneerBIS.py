@@ -162,7 +162,7 @@ class Auctioneer(threading.Thread):
     def start_loop_check_progress(self):
         while not self.task.is_terminated and (self.task.progress - self.task.previous_progress) >= self.min_progress:
             self.send_renewal()
-            time.sleep(4)
+            time.sleep(8)
             if len(self.ack_stack) != 0:
                 # the ack msg related to the previous renewal was not yet received
                 self.reallocate(log_msg=" task cause no ack received!")

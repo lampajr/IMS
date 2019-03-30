@@ -1,11 +1,11 @@
 import random
 
-from utility import Topic, Subject, Logger
+from utility import Topic, Subject, Logger, MAX_ID
 from abc import ABC, abstractmethod
 from termcolor import cprint
 
 
-class Task(Logger, ABC):
+class Task(ABC):
 
     """ Abstract representation of a single Task """
 
@@ -20,10 +20,12 @@ class Task(Logger, ABC):
                  verbose=True,
                  attrs=None,
                  level=3):
-        super(Task, self).__init__(name, color, attrs, write_on_terminal, verbose, level)
+
+        super(Task, self).__init__()
 
         # task information
-        self.task_id = 0 # TODO: generate random task id
+        self.logger = Logger(name, color, attrs, write_on_terminal, verbose, level)
+        self.task_id = random.randint(0, MAX_ID)
         self.length = length
         if subjects is None:
             subjects = []

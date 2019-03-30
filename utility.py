@@ -1,7 +1,58 @@
 import random
+import time
 from enum import Enum
 from abc import ABC, abstractmethod
 from termcolor import cprint
+
+
+MAX_ID = 500
+
+
+class Logger:
+    """ Abstract logger class """
+
+    ERROR = "red"
+
+    def __init__(self, name, color, attrs, write_on_terminal, verbose, level):
+        super(Logger, self).__init__()
+        self.name = name.upper()
+        self.color = color
+        if attrs is None:
+            attrs = []
+        self.attrs = attrs
+        self.write_on_terminal = write_on_terminal
+        self.verbose = verbose
+        self.level = level
+
+    def log(self, message, kind="d", level=0):
+
+        """ logger function
+            kind: 'd' -> debug, 'e' -> error
+            level: int -> how many tabs to indent """
+
+        if self.verbose:
+            if self.write_on_terminal:
+                self.tlog(kind=kind, message=message)
+            else:
+                self.flog(kind=kind, message=message)
+
+    def get_log_color(self, kind):
+        return Logger.ERROR if kind == 'e' \
+            else "grey" if self.color is None else self.color
+
+    def tlog(self, message, kind):
+
+        """ log the information on the terminal """
+
+        color = self.get_log_color(kind=kind)
+        text = 2 * self.level * "    " + "[" + self.name + "]    " + message
+        cprint(text=text, color=color, attrs=self.attrs)
+
+    def flog(self, message, kind):
+
+        """ log information on the file """
+
+        pass
 
 
 class Topic(Enum):
@@ -23,7 +74,14 @@ class Subject(Enum):
     DISH = 5
 
 
+def get_time():
+    return int(round(time.time() * 1000))
+
+
 def get_color(color):
+
+    """ return a random color string different from the argument """
+
     lst = ['green', 'yellow', 'blue', 'magenta', 'cyan', 'white']
     dim = len(lst) - 1
     new_color = color
@@ -34,6 +92,7 @@ def get_color(color):
 
 
 def get_subjects(topic):
+
     """ provide list of subject required given a topic """
 
     if topic == Topic.COOK:
@@ -45,6 +104,7 @@ def get_subjects(topic):
 
 
 def get_topic(subjects):
+
     """ function that given the list of subjects returns
         the corresponding topic over which negotiate """
 
@@ -56,47 +116,3 @@ def get_topic(subjects):
         return Topic.HANDLE_PAYMENTS
     else:
         print('There are no valid resources!!')
-
-
-class Logger:
-    """ Abstract logger class """
-
-    ERROR = "red"
-
-    def __init__(self, name, color, attrs, write_on_terminal, verbose, level):
-        super(Logger, self).__init__()
-        self.name = name.upper()
-        self.color = color
-        self.attrs = attrs
-        self.write_on_terminal = write_on_terminal
-        self.verbose = verbose
-        self.level = level
-
-    def log(self, message, kind="d", level=0):
-
-        """ logger function
-            kind: 'd' -> debug, 'e' -> error
-            level: int -> how many tabs to indent """
-
-        if self.verbose:
-            if self.write_on_terminal:
-                self.tlog(kind=kind, message=message)
-            else:
-                self.flog(kind=kind, message=message)
-
-    def get_log_color(self, kind):
-        return Logger.ERROR if kind == 'e' else self.color
-
-    def tlog(self, message, kind):
-
-        """ log the information on the terminal """
-
-        color = self.get_log_color(kind=kind)
-        text = 2 * self.level * "    " + "[" + self.name + "]    " + message
-        cprint(text=text, color=color, attrs=self.attrs)
-
-    def flog(self, message, kind):
-
-        """ log information on the file """
-
-        pass

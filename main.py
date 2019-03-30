@@ -1,6 +1,6 @@
-from agentBIS import Agent, Ability
-from auctioneerBIS import *
-from taskBIS import *
+from agent import Agent, Skill
+from auctioneer import *
+from task import *
 
 # TODO: change metric computation
 # TODO: setup state of the agent (think if add env or not)
@@ -12,130 +12,98 @@ if __name__ == '__main__':
 
     ##### TASKS ####
 
-    task1 = CookTask(task_id="c" + str(1),
-                     name="amatriciana",
+    task1 = CookTask(name="amatriciana",
                      length=200,
+                     min_progress=min_progress,
                      difficulty=5,
-                     color="green",
+                     color="yellow",
                      write_on_terminal=True)
 
-    task2 = CookTask(task_id="c" + str(2),
-                     name="carbonara",
+    task2 = CookTask(name="carbonara",
                      length=300,
+                     min_progress=min_progress,
                      difficulty=5,
                      color="blue",
                      write_on_terminal=True)
 
-    task3 = CookTask(task_id="c" + str(2),
-                     name="risotto",
+    task3 = CookTask(name="risotto",
                      length=500,
+                     min_progress=min_progress,
                      difficulty=5,
-                     color="blue",
+                     color="cyan",
                      write_on_terminal=True)
 
-    task4 = CookTask(task_id="c" + str(2),
-                     name="puttanesca",
+    task4 = CookTask(name="puttanesca",
                      length=200,
+                     min_progress=min_progress,
                      difficulty=5,
-                     color="blue",
+                     color="magenta",
                      write_on_terminal=True)
 
-    task5 = CookTask(task_id="c" + str(2),
-                     name="scoglio",
+    task5 = CookTask(name="scoglio",
                      length=250,
+                     min_progress=min_progress,
                      difficulty=5,
-                     color="blue",
+                     color="yellow",
                      write_on_terminal=True)
 
     tasks = [task1, task2, task3, task4, task5]
 
     #### AGENTS #####
 
-    agent1 = Agent(agent_id=1,
-                   name="Main-Chef",
+    agent1 = Agent(name="Main-Chef",
                    topic=Topic.COOK,
-                   details=True,
-                   contract_time=contract_time,
-                   ability=Ability(speed=70, stars=3, energy=100),
-                   write_terminal=True)
+                   contract_time=contract_time+50,
+                   skill=Skill(speed=70, stars=3, energy=100))
 
-    agent2 = Agent(agent_id=2,
-                   name="Sub-Chef",
+    agent2 = Agent(name="Chef-Marco",
                    topic=Topic.COOK,
-                   details=True,
-                   contract_time=contract_time,
-                   ability=Ability(speed=70, stars=3, energy=100),
-                   write_terminal=True)
+                   contract_time=contract_time+50,
+                   skill=Skill(speed=70, stars=3, energy=100))
 
-    agent3 = Agent(agent_id=3,
-                   name="Sub-Chef",
+    agent3 = Agent(name="Sub-Chef-Hilary",
                    topic=Topic.COOK,
-                   details=True,
-                   contract_time=contract_time,
-                   ability=Ability(speed=60, stars=3, energy=100),
-                   write_terminal=True)
+                   contract_time=contract_time+50,
+                   skill=Skill(speed=60, stars=3, energy=100))
 
-    agent4 = Agent(agent_id=4,
-                   name="Sub-Chef",
+    agent4 = Agent(name="Sub-Chef-Michael",
                    topic=Topic.COOK,
-                   details=True,
-                   contract_time=contract_time,
-                   ability=Ability(speed=75, stars=3, energy=100),
-                   write_terminal=True)
+                   contract_time=contract_time+50,
+                   skill=Skill(speed=75, stars=3, energy=100))
 
-    agent7 = Agent(agent_id=7,
-                   name="Waiter George",
+    agent7 = Agent(name="Waiter-George",
                    topic=Topic.DISH_OUT,
-                   details=True,
-                   contract_time=contract_time,
-                   ability=Ability(speed=80, cleverness=3, energy=100),
-                   write_terminal=True)
+                   contract_time=contract_time+50,
+                   skill=Skill(speed=80, cleverness=3, energy=100))
 
-    agent8 = Agent(agent_id=8,
-                   name="Waiter Mike",
+    agent8 = Agent(name="Waiter-Mike",
                    topic=Topic.DISH_OUT,
-                   details=True,
-                   contract_time=contract_time,
-                   ability=Ability(speed=90, cleverness=3, energy=100),
-                   write_terminal=True)
+                   contract_time=contract_time+50,
+                   skill=Skill(speed=90, cleverness=3, energy=100))
 
-    agent9 = Agent(agent_id=9,
-                   name="Waiter George",
+    agent9 = Agent(name="Waiter-George",
                    topic=Topic.DISH_OUT,
-                   details=True,
-                   contract_time=contract_time,
-                   ability=Ability(speed=40, cleverness=80, energy=100),
-                   write_terminal=True)
+                   contract_time=contract_time+50,
+                   skill=Skill(speed=40, cleverness=80, energy=100))
 
-    agent10 = Agent(agent_id=10,
-                    name="Waiter Mike",
+    agent10 = Agent(name="Waiter-Mike",
                     topic=Topic.DISH_OUT,
-                    details=True,
-                    contract_time=contract_time,
-                    ability=Ability(speed=20, cleverness=20, energy=100),
-                    write_terminal=True)
+                    contract_time=contract_time+50,
+                    skill=Skill(speed=20, cleverness=20, energy=100))
 
-    agent11 = Agent(agent_id=11,
-                    name="Cashier Melania",
+    agent11 = Agent(name="Cashier-Melania",
                     topic=Topic.HANDLE_PAYMENTS,
-                    details=True,
-                    contract_time=contract_time,
-                    ability=Ability(speed=50, cleverness=50, energy=100),
-                    write_terminal=True)
+                    contract_time=contract_time+50,
+                    skill=Skill(speed=50, cleverness=50, energy=100))
 
-    agent12 = Agent(agent_id=12,
-                    name="Cashier John",
+    agent12 = Agent(name="Cashier-John",
                     topic=Topic.HANDLE_PAYMENTS,
-                    details=True,
-                    contract_time=contract_time,
-                    ability=Ability(speed=70, cleverness=60, energy=100),
-                    write_terminal=True)
+                    contract_time=contract_time+50,
+                    skill=Skill(speed=70, cleverness=60, energy=100))
 
     ##### AUCTIONEERS #####
 
     for t in tasks:
-        auct = generate_auctioneer(contract_time=contract_time,
-                                   min_progress=min_progress,
-                                   write_on_terminal=True)
-        auct.trigger_task(t)
+        auct = Auctioneer(auction_timeout=3, contract_time=contract_time)
+        auct.allocate_task(t)
         time.sleep(5)

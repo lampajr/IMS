@@ -9,6 +9,8 @@ class Task(ABC):
 
     """ Abstract representation of a single Task """
 
+    BASE_NAME = "task"
+
     def __init__(self,
                  name,
                  length,
@@ -25,7 +27,7 @@ class Task(ABC):
 
         # task information
         self.logger = Logger(name, color, attrs, write_on_terminal, verbose, level)
-        self.task_id = random.randint(0, MAX_ID)
+        self.task_id = Task.BASE_NAME + str(random.randint(0, MAX_ID))
         self.length = length
         if subjects is None:
             subjects = []
@@ -35,7 +37,7 @@ class Task(ABC):
         # task progress
         self.min_progress = min_progress
         self.progress = 0
-        self.previous_progress = None
+        self.previous_progress = -1000000
         self.terminated = False
 
     @abstractmethod
@@ -67,8 +69,7 @@ class Task(ABC):
         if percentage <= 100:
             self.logger.log(message="execution {perc}% complete".format(perc=percentage))
         else:
-            self.logger.log(message="task completed!!!!")
-
+            self.logger.log(message="task completed!!!!  <---------", kind='e')
 
 
 class CookTask(Task):

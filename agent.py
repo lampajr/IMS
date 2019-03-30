@@ -1,10 +1,12 @@
 import random
 import threading
+import time
 
 from pubsub import pub
+from termcolor import cprint
 
 from message import BidMessage, AcknowledgementMessage
-from utility import MAX_ID, Logger, get_time
+from utility import MAX_ID, Logger, get_time, MessageType
 
 
 class Skill:
@@ -56,7 +58,7 @@ class Agent(threading.Thread):
                                                                                    top=self.topic.value))
         pub.subscribe(self.on_message_received, topicName=self.topic.value)
 
-    def fail(self):
+    def invalidate(self):
 
         """ fail the current agent """
 
@@ -85,8 +87,8 @@ class Agent(threading.Thread):
         # the auctioneer
         if self.executing and self.last_renewal is not None and ((get_time() - self.last_renewal) / 1000) > self.contract_time:
             # invalidate myself for a while
-            self.fail()
-            time.sleep(10)
+            self.invalidate()
+            time.sleep(5)
             self.repair()
 
         if not self.failed:
@@ -97,7 +99,7 @@ class Agent(threading.Thread):
             elif arg1.msg_type == MessageType.RENEWAL and self.current_auction is not None \
                     and arg1.auction_id == self.current_auction and arg1.winner_id == self.agent_id:
                 self.logger.log("New message received = " + str(arg1.msg_type.name))
-                if self.current_task is not None and not self.current_task.is_terminated:
+                if self.current_task is not None and not self.current_task.terminated:
                     self.on_renewal(msg=arg1)
             elif arg1.msg_type == MessageType.CLOSE and not self.executing and self.occupied:
                 self.logger.log("New message received = " + str(arg1.msg_type.name))
@@ -131,6 +133,7 @@ class Agent(threading.Thread):
             self.logger.log(message="I'm the winner!!!")
             self.logger.log(message="I'm going to execute the task..")
             self.executing = True
+            self.logger.color = self.current_task.logger.color
             self.__execute_task()
 
 
@@ -154,7 +157,7 @@ class Agent(threading.Thread):
         try:
             self.current_task.execute(value=random.randint(0, 100))
             self.logger.log("I'm performing the task..")
-            if self.current_task.is_terminated:
+            if self.current_task.terminated:
                 self.__reset()
         except AttributeError:
             pass
@@ -165,3 +168,4 @@ class Agent(threading.Thread):
         self.occupied = False
         self.executing = False
         self.last_renewal = None
+        self.logger.color = None

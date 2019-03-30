@@ -41,7 +41,7 @@ class Auctioneer(threading.Thread):
         self.last_renewal = None
 
     def run(self):
-        pub.subscribe(self.on_message_received, topicName=self.topic)
+        pub.subscribe(self.on_message_received, topicName=self.topic.value)
         self.announce_task()
 
     def on_message_received(self, arg1):
@@ -129,6 +129,7 @@ class Auctioneer(threading.Thread):
 
         self.task = task
         self.topic = get_topic(task.subjects)
+        self.logger.color = self.task.logger.color
         if not self.is_alive():
             self.start()
         else:
@@ -157,7 +158,7 @@ class Auctioneer(threading.Thread):
             winner = self.bids[0]
             for agent_id, bid in self.bids:
                 winner = (agent_id, bid) if bid > winner[1] else winner
-            return winner
+            return winner[0]
         else:
             return None
 

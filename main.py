@@ -1,6 +1,6 @@
-from agent import Agent, Ability
-from auctioneer import *
-from task import *
+from agentBIS import Agent, Ability
+from auctioneerBIS import *
+from taskBIS import *
 
 # TODO: change metric computation
 # TODO: setup state of the agent (think if add env or not)

@@ -1,6 +1,6 @@
-from agent import Agent
-from auctioneer import Auctioneer, generate_auctioneer
-from task import *
+from agentBIS import Agent
+from auctioneerBIS import Auctioneer, generate_auctioneer
+from taskBIS import *
 import random
 
 

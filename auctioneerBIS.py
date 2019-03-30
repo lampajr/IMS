@@ -4,15 +4,11 @@ import random
 from pubsub import pub
 import time
 import threading as threading
+from supportBIS import get_time
+from termcolor import cprint
 
-from termcolor import colored, cprint
-
-from message import *
-from task import get_topic
-
-
-def get_time():
-    return int(round(time.time() * 1000))
+from messageBIS import *
+from taskBIS import get_topic
 
 
 def generate_auctioneer(max_elapsed_bids_time=5, contract_time=10, details=False,
@@ -243,13 +239,14 @@ class Auctioneer(threading.Thread):
             f.write(res + prefix + " -> " + message + "\n")
 
     def terminal_log(self, message, color, use_time):
-        lo = threading.Lock()
-        lo.acquire()
-        prefix = '[' + str(self.auction_id) +']'
-        if color is None:
-            color = self.task.color
-        attrs = self.task.attrs
-        if use_time:
-            cprint('{' + str(datetime.datetime.now().time()) + '}', "grey", end=' ')
-        cprint(prefix + " -> " + message, color=color, attrs=attrs)
-        lo.release()
+        if self.details:
+            lo = threading.Lock()
+            lo.acquire()
+            prefix = '[' + str(self.auction_id) +']'
+            if color is None:
+                color = self.task.color
+            attrs = self.task.attrs
+            if use_time:
+                cprint('{' + str(datetime.datetime.now().time()) + '}', "grey", end=' ')
+            cprint(prefix + " -> " + message, color=color, attrs=attrs)
+            lo.release()

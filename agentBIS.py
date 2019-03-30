@@ -113,7 +113,7 @@ class Agent(threading.Thread):
         self.current_task = msg.task
         self.occupied = True
 
-        fitness = self.current_task.metric(ability=self.ability)
+        fitness = self.current_task.metric(skill=self.ability)
 
         # generate bid message
         msg = BidMessage(auction_id=self.current_auction,

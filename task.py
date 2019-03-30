@@ -39,8 +39,8 @@ class Task(ABC):
         self.terminated = False
 
     @abstractmethod
-    def metric(self, ability):
-        """ metric function that given the ability of the agent
+    def metric(self, skill):
+        """ metric function that given the skills of the agent
             returns a fitness score representing how much the
             agent is good for doing this task """
         pass
@@ -85,10 +85,10 @@ class CookTask(Task):
                                        verbose=verbose,
                                        attrs=attrs)
 
-    def metric(self, ability):
+    def metric(self, skill):
 
         # linear combination among all abilities but cleverness
-        deterministic_fitness = 0.5 * 20 * ability.stars + 0.4 * ability.energy + 0.1 * ability.speed
+        deterministic_fitness = 0.5 * 20 * skill.stars + 0.4 * skill.energy + 0.1 * skill.speed
         random_fitness = random.randint(0, 30)
 
         return deterministic_fitness + random_fitness
@@ -108,10 +108,10 @@ class DishOutTask(Task):
                                           verbose=verbose,
                                           attrs=attrs)
 
-    def metric(self, ability):
+    def metric(self, skill):
 
         # linear combination among all abilities but stars
-        deterministic_fitness = 0.1 * ability.cleverness + 0.4 * ability.energy + 0.5 * ability.speed
+        deterministic_fitness = 0.1 * skill.cleverness + 0.4 * skill.energy + 0.5 * skill.speed
         random_fitness = random.randint(0, 20)
 
         return deterministic_fitness + random_fitness
@@ -131,10 +131,10 @@ class HandlePaymentTask(Task):
                                                 verbose=verbose,
                                                 attrs=attrs)
 
-    def metric(self, ability):
+    def metric(self, skill):
 
         # linear combination among all abilities but stars
-        deterministic_fitness = 0.7 * ability.cleverness + 0.2 * ability.energy + 0.1 * ability.speed
+        deterministic_fitness = 0.7 * skill.cleverness + 0.2 * skill.energy + 0.1 * skill.speed
         random_fitness = random.randint(0, 30)
 
         return deterministic_fitness + random_fitness

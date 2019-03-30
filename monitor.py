@@ -86,6 +86,6 @@ class Monitor(threading.Thread):
     def run(self):
         while not self.__check_termination():
             self.__print_monitor()
-            print("\n\n\n\n\n\n")
+            print("\n\n\n\n\n\n\n\n")
             time.sleep(self.refresh_rate)
         self.__print_monitor()

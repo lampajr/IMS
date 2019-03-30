@@ -151,7 +151,13 @@ class Agent(threading.Thread):
         pub.sendMessage(topicName=self.topic.value, arg1=ack_message)
 
     def __execute_task(self):
-        pass
+        try:
+            self.current_task.execute(value=random.randint(0, 100))
+            self.logger.log("I'm performing the task..")
+            if self.current_task.is_terminated:
+                self.__reset()
+        except AttributeError:
+            pass
 
     def __reset(self):
         self.current_task = None

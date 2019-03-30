@@ -66,9 +66,6 @@ class Task(Logger, ABC):
             self.log(message="execution {perc}% complete".format(perc=percentage), kind='d')
 
 
-    def flog(self, message, kind, level):
-        pass
-
 
 class CookTask(Task):
 
@@ -93,4 +90,47 @@ class CookTask(Task):
         return deterministic_fitness + random_fitness
 
 
+class DishOutTask(Task):
 
+    def __init__(self, name, length, min_progress, difficulty,
+                 color="grey", write_on_terminal=True, verbose=True, attrs=None):
+        super(DishOutTask, self).__init__(name=name,
+                                          length=length,
+                                          subjects=[Subject.DISH, Subject.TRAYS],
+                                          min_progress=min_progress,
+                                          difficulty=difficulty,
+                                          color=color,
+                                          write_on_terminal=write_on_terminal,
+                                          verbose=verbose,
+                                          attrs=attrs)
+
+    def metric(self, ability):
+
+        # linear combination among all abilities but stars
+        deterministic_fitness = 0.1 * ability.cleverness + 0.4 * ability.energy + 0.5 * ability.speed
+        random_fitness = random.randint(0, 20)
+
+        return deterministic_fitness + random_fitness
+
+
+class HandlePaymentTask(Task):
+
+    def __init__(self, name, length, min_progress, difficulty,
+                 color="grey", write_on_terminal=True, verbose=True, attrs=None):
+        super(HandlePaymentTask, self).__init__(name=name,
+                                                length=length,
+                                                subjects=[Subject.DISH, Subject.TRAYS],
+                                                min_progress=min_progress,
+                                                difficulty=difficulty,
+                                                color=color,
+                                                write_on_terminal=write_on_terminal,
+                                                verbose=verbose,
+                                                attrs=attrs)
+
+    def metric(self, ability):
+
+        # linear combination among all abilities but stars
+        deterministic_fitness = 0.7 * ability.cleverness + 0.2 * ability.energy + 0.1 * ability.speed
+        random_fitness = random.randint(0, 30)
+
+        return deterministic_fitness + random_fitness

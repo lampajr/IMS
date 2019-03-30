@@ -58,7 +58,7 @@ def get_topic(subjects):
         print('There are no valid resources!!')
 
 
-class Logger(ABC):
+class Logger:
     """ Abstract logger class """
 
     ERROR = "red"

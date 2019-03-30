@@ -65,7 +65,7 @@ class Task(ABC):
         percentage = (self.progress * 100) / self.length
 
         if percentage <= 100:
-            self.log(message="execution {perc}% complete".format(perc=percentage), kind='d')
+            self.logger.log(message="execution {perc}% complete".format(perc=percentage), kind='d')
 
 
 

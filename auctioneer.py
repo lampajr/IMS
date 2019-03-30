@@ -1,7 +1,7 @@
 import random
 import threading
 
-from utility import Logger, MAX_ID
+from utility import Logger, MAX_ID, MessageType
 from pubsub import pub
 
 
@@ -47,7 +47,12 @@ class Auctioneer(threading.Thread):
         """ methods called whenever a new message is received
             on the subscribed topic """
 
-        pass
+        # discard any message not related to this auction
+        if arg1.auction_id != self.auction_id:
+            return
+
+        ###################
+
 
     def announce_task(self):
 
@@ -71,6 +76,8 @@ class Auctioneer(threading.Thread):
     def __add_bid(self, agent_id, value):
         if self.opened:
             self.bids.append((agent_id, value))
+            self.logger.log(message="new bid received from agent {id}, with value={val}".format(id=agent_id,
+                                                                                                val=value))
 
     def __clear_bids(self):
         self.bids.clear()

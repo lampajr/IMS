@@ -74,6 +74,14 @@ class Subject(Enum):
     DISH = 5
 
 
+class MessageType(Enum):
+    ANNOUNCEMENT = 0
+    BID = 1
+    CLOSE = 2
+    RENEWAL = 3
+    ACKNOWLEDGEMENT = 4
+
+
 def get_time():
     return int(round(time.time() * 1000))
 

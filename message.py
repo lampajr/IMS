@@ -1,13 +1,5 @@
-from enum import Enum
 from abc import ABC
-
-
-class MessageType(Enum):
-    ANNOUNCEMENT = 0
-    BID = 1
-    CLOSE = 2
-    RENEWAL = 3
-    ACKNOWLEDGEMENT = 4
+from utility import MessageType
 
 
 class GenericMessage(ABC):
@@ -27,6 +19,16 @@ class AnnouncementMessage(GenericMessage):
     def __init__(self, auction_id, task):
         super(AnnouncementMessage, self).__init__(auction_id, MessageType.ANNOUNCEMENT)
         self.task = task
+
+
+class BidMessage(GenericMessage):
+
+    """ Bid message sent by agent toward auctioneer """
+
+    def __init__(self, auction_id, agent_id, value):
+        super(BidMessage, self).__init__(auction_id, MessageType.BID)
+        self.value = value
+        self.agent_id = agent_id
 
 
 class RenewalMessage(GenericMessage):
@@ -53,13 +55,3 @@ class AcknowledgementMessage(GenericMessage):
     def __init__(self, auction_id, ack_id):
         super(AcknowledgementMessage, self).__init__(auction_id, MessageType.ACKNOWLEDGEMENT)
         self.ack_id = ack_id
-
-
-class BidMessage(GenericMessage):
-
-    """ Bid message sent by agent toward auctioneer """
-
-    def __init__(self, auction_id, agent_id, value):
-        super(BidMessage, self).__init__(auction_id, MessageType.BID)
-        self.value = value
-        self.agent_id = agent_id

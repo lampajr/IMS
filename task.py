@@ -36,6 +36,7 @@ class Task(ABC):
 
         # task progress
         self.min_progress = min_progress
+        self.percentage = 0
         self.progress = 0
         self.previous_progress = -1000000
         self.terminated = False
@@ -64,11 +65,12 @@ class Task(ABC):
             self.terminated = True
 
     def __print_progress(self):
-        percentage = (self.progress * 100) / self.length
+        self.percentage = int((self.progress * 100) / self.length)
 
-        if percentage <= 100:
-            self.logger.log(message="execution {perc}% complete".format(perc=percentage))
+        if self.percentage <= 100:
+            self.logger.log(message="execution {perc}% complete".format(perc=self.percentage))
         else:
+            self.percentage = 100
             self.logger.log(message="task completed!!!!  <---------", kind='e')
 
 

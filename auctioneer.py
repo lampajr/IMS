@@ -17,7 +17,7 @@ class Auctioneer(threading.Thread):
                  contract_time,
                  discard_task=False,
                  write_on_terminal=True,
-                 verbose=True,
+                 verbose=False,
                  attrs=None,
                  color=None,
                  level=0):

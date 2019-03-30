@@ -32,7 +32,7 @@ class Agent(threading.Thread):
                  contract_time,
                  skill,
                  write_on_terminal=True,
-                 verbose=True,
+                 verbose=False,
                  attrs=None,
                  color=None,
                  level=1):

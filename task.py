@@ -19,7 +19,7 @@ class Task(ABC):
                  difficulty,
                  color="grey",
                  write_on_terminal=True,
-                 verbose=True,
+                 verbose=False,
                  attrs=None,
                  level=3):
 
@@ -75,7 +75,7 @@ class Task(ABC):
 class CookTask(Task):
 
     def __init__(self, name, length, min_progress, difficulty,
-                 color="grey", write_on_terminal=True, verbose=True, attrs=None):
+                 color="grey", write_on_terminal=True, verbose=False, attrs=None):
         super(CookTask, self).__init__(name=name,
                                        length=length,
                                        subjects=[Subject.COOKERS, Subject.KITCHEN, Subject.INGREDIENTS],
@@ -98,7 +98,7 @@ class CookTask(Task):
 class DishOutTask(Task):
 
     def __init__(self, name, length, min_progress, difficulty,
-                 color="grey", write_on_terminal=True, verbose=True, attrs=None):
+                 color="grey", write_on_terminal=True, verbose=False, attrs=None):
         super(DishOutTask, self).__init__(name=name,
                                           length=length,
                                           subjects=[Subject.DISH, Subject.TRAYS],
@@ -121,7 +121,7 @@ class DishOutTask(Task):
 class HandlePaymentTask(Task):
 
     def __init__(self, name, length, min_progress, difficulty,
-                 color="grey", write_on_terminal=True, verbose=True, attrs=None):
+                 color="grey", write_on_terminal=True, verbose=False, attrs=None):
         super(HandlePaymentTask, self).__init__(name=name,
                                                 length=length,
                                                 subjects=[Subject.DISH, Subject.TRAYS],

@@ -1,5 +1,6 @@
 from agent import Agent, Skill
 from auctioneer import *
+from monitor import Monitor
 from task import *
 
 # TODO: change metric computation
@@ -11,6 +12,7 @@ if __name__ == '__main__':
     min_progress = 0
 
     ##### TASKS ####
+    tasks = []
 
     task1 = CookTask(name="amatriciana",
                      length=200,
@@ -18,6 +20,7 @@ if __name__ == '__main__':
                      difficulty=5,
                      color="yellow",
                      write_on_terminal=True)
+    tasks.append(task1)
 
     task2 = CookTask(name="carbonara",
                      length=300,
@@ -26,12 +29,16 @@ if __name__ == '__main__':
                      color="blue",
                      write_on_terminal=True)
 
+    tasks.append(task2)
+
     task3 = CookTask(name="risotto",
                      length=500,
                      min_progress=min_progress,
                      difficulty=5,
                      color="cyan",
                      write_on_terminal=True)
+
+    tasks.append(task3)
 
     task4 = CookTask(name="puttanesca",
                      length=200,
@@ -40,6 +47,8 @@ if __name__ == '__main__':
                      color="magenta",
                      write_on_terminal=True)
 
+    tasks.append(task4)
+
     task5 = CookTask(name="scoglio",
                      length=250,
                      min_progress=min_progress,
@@ -47,7 +56,7 @@ if __name__ == '__main__':
                      color="yellow",
                      write_on_terminal=True)
 
-    tasks = [task1, task2, task3, task4, task5]
+    tasks.append(task5)
 
     #### AGENTS #####
 
@@ -101,9 +110,16 @@ if __name__ == '__main__':
                     contract_time=contract_time+50,
                     skill=Skill(speed=70, cleverness=60, energy=100))
 
+    agents = [agent1, agent2, agent3, agent4, agent7, agent8, agent9, agent10, agent11, agent12]
+
     ##### AUCTIONEERS #####
 
+    Monitor(tasks=tasks, agents=agents).start()
+
     for t in tasks:
-        auct = Auctioneer(auction_timeout=3, contract_time=contract_time)
-        auct.allocate_task(t)
-        time.sleep(5)
+        try:
+            auct = Auctioneer(auction_timeout=3, contract_time=contract_time)
+            auct.allocate_task(t)
+            time.sleep(5)
+        except KeyboardInterrupt:
+            pass

@@ -2,9 +2,20 @@ import random
 import threading
 import time
 
-from message import RenewalMessage, CloseMessage, AnnouncementMessage
-from utility import Logger, MAX_ID, MessageType, get_topic, get_time
+from utility import *
+from message import *
 from pubsub import pub
+
+
+
+def allocate_task(task, auction_timeout=5, contract_time=6):
+
+    """ start allocating a new task in the environment """
+
+    auctioneer = Auctioneer(auction_timeout=auction_timeout,
+                            contract_time=contract_time)
+
+    auctioneer.allocate_task(task=task)
 
 
 class Auctioneer(threading.Thread):

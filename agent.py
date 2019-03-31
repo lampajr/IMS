@@ -50,7 +50,7 @@ class Agent(threading.Thread):
         self.current_task = None
         self.current_auction = None
         self.last_renewal = None
-        self.start()
+        self.run()
 
     def run(self):
         self.logger.log(message="I'm {name} with {id} id and {top} topic!!".format(name=self.logger.name,

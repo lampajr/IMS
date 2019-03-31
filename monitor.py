@@ -27,12 +27,12 @@ class Monitor(threading.Thread):
         self.description_width = 30
         self.topic_width = 30
 
-        self.border = 130 * "*"
-        self.header = "**{0: ^30s}**{1: ^30s}**{2: ^30s}**{3: ^30s}**".format(Monitor.BASE_NAME,
+        self.border = 150 * "*"
+        self.header = "**{0: ^30s}**{1: ^30s}**{2: ^50s}**{3: ^30s}**".format(Monitor.BASE_NAME,
                                                                               Monitor.BASE_STATE,
                                                                               Monitor.BASE_DESCRIPTION,
                                                                               Monitor.BASE_TOPIC)
-        self.task_header = "**{0: ^30s}**{1: ^62}**{2: ^30s}**".format(Monitor.BASE_TASK,
+        self.task_header = "**{0: ^30s}**{1: ^82}**{2: ^30s}**".format(Monitor.BASE_TASK,
                                                                        Monitor.BASE_DESCRIPTION,
                                                                        Monitor.BASE_TOPIC)
 
@@ -63,8 +63,8 @@ class Monitor(threading.Thread):
         for a in self.agents:
             state = colored("executing", color="yellow") if a.executing else colored("occupied", color="blue") \
                 if a.occupied else colored("failed", color="red") if a.failed else colored("free", color="green")
-            description = "empty" if not a.executing else a.current_task.logger.name
-            line = "**{0: ^30s}**{1: ^39s}**{2: ^30s}**{3: ^30}**".format(a.logger.name,
+            description = "empty" if not a.executing else a.current_task.logger.description
+            line = "**{0: ^30s}**{1: ^39s}**{2: ^50s}**{3: ^30}**".format(a.logger.name,
                                                                           state,
                                                                           description,
                                                                           a.topic.value)
@@ -79,7 +79,7 @@ class Monitor(threading.Thread):
             state = colored("terminated!", "red") if t.terminated \
                 else colored("in execution.. {}% complete".format(t.percentage), "green") \
                     if t.progress != 0 else colored("to be allocated", "grey")
-            line = "**{0: ^30s}**{1: ^71s}**{2: ^30s}**".format(t.logger.name, state, get_topic(t.subjects).value)
+            line = "**{0: ^30s}**{1: ^91s}**{2: ^30s}**".format(t.logger.name, state, get_topic(t.subjects).value)
             cprint(line)
         print(self.border)
 
@@ -88,4 +88,6 @@ class Monitor(threading.Thread):
             self.__print_monitor()
             print("\n\n\n\n\n\n\n\n")
             time.sleep(self.refresh_rate)
+        for a in self.agents:
+            a.occupied = False
         self.__print_monitor()

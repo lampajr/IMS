@@ -3,7 +3,6 @@ import time
 from enum import Enum
 from termcolor import cprint
 
-
 MAX_ID = 500
 
 
@@ -19,7 +18,8 @@ class Logger:
                  write_on_terminal,
                  verbose,
                  level,
-                 use_time=True):
+                 use_time=True,
+                 description=None):
         super(Logger, self).__init__()
         self.name = name.upper()
         self.color = color
@@ -30,6 +30,7 @@ class Logger:
         self.verbose = verbose
         self.level = level
         self.use_time = use_time
+        self.description = description
 
     def log(self, message, kind="d", level=0):
 

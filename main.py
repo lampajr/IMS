@@ -2,6 +2,7 @@ from agent import Agent, Skill
 from auctioneer import *
 from monitor import Monitor
 from task import *
+from utility import *
 
 # TODO: change metric computation
 # TODO: setup state of the agent (think if add env or not)
@@ -14,12 +15,22 @@ if __name__ == '__main__':
     ##### TASKS ####
     tasks = []
 
+    task1_2 = DishOutTask(name="dish-out-amatriciana",
+                          length=200,
+                          min_progress=min_progress,
+                          difficulty=5,
+                          color="yellow",
+                          write_on_terminal=True,
+                          description="dish out pasta all'amatriciana")
+
     task1 = CookTask(name="amatriciana",
                      length=200,
                      min_progress=min_progress,
                      difficulty=5,
                      color="yellow",
-                     write_on_terminal=True)
+                     write_on_terminal=True,
+                     description="cooking amatriciana",
+                     subtask=task1_2)
     tasks.append(task1)
 
     task2 = CookTask(name="carbonara",
@@ -27,7 +38,8 @@ if __name__ == '__main__':
                      min_progress=min_progress,
                      difficulty=5,
                      color="blue",
-                     write_on_terminal=True)
+                     write_on_terminal=True,
+                     description="cooking carbonara with guanciale")
 
     tasks.append(task2)
 
@@ -36,7 +48,8 @@ if __name__ == '__main__':
                      min_progress=min_progress,
                      difficulty=5,
                      color="cyan",
-                     write_on_terminal=True)
+                     write_on_terminal=True,
+                     description="cooking risotto with zafferano")
 
     tasks.append(task3)
 
@@ -45,7 +58,8 @@ if __name__ == '__main__':
                      min_progress=min_progress,
                      difficulty=5,
                      color="magenta",
-                     write_on_terminal=True)
+                     write_on_terminal=True,
+                     description="cooking puttanesca")
 
     tasks.append(task4)
 
@@ -54,9 +68,12 @@ if __name__ == '__main__':
                      min_progress=min_progress,
                      difficulty=5,
                      color="yellow",
-                     write_on_terminal=True)
+                     write_on_terminal=True,
+                     description="cooking pasta allo scoglio")
 
     tasks.append(task5)
+
+    tasks.append(task1_2)
 
     #### AGENTS #####
 
@@ -114,7 +131,7 @@ if __name__ == '__main__':
 
     ##### AUCTIONEERS #####
 
-    Monitor(tasks=tasks, agents=agents).start()
+    Monitor(tasks=tasks, agents=agents, refresh_rate=2).start()
 
     for t in tasks:
         try:

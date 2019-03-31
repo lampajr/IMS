@@ -1,8 +1,8 @@
 import random
 
-from utility import Topic, Subject, Logger, MAX_ID
+from auctioneer import allocate_task
+from utility import Subject, Logger, MAX_ID
 from abc import ABC, abstractmethod
-from termcolor import cprint
 
 
 class Task(ABC):
@@ -21,18 +21,28 @@ class Task(ABC):
                  write_on_terminal=True,
                  verbose=False,
                  attrs=None,
-                 level=3):
+                 level=3,
+                 description=None,
+                 subtask=None):
 
         super(Task, self).__init__()
 
         # task information
-        self.logger = Logger(name, color, attrs, write_on_terminal, verbose, level)
+        self.logger = Logger(name=name,
+                             color=color,
+                             attrs=attrs,
+                             write_on_terminal=write_on_terminal,
+                             verbose=verbose,
+                             level=level,
+                             description=description)
+
         self.task_id = Task.BASE_NAME + str(random.randint(0, MAX_ID))
         self.length = length
         if subjects is None:
             subjects = []
         self.subjects = subjects
         self.difficulty = difficulty
+        self.subtask = subtask
 
         # task progress
         self.min_progress = min_progress
@@ -64,7 +74,17 @@ class Task(ABC):
         if self.progress >= self.length:
             self.terminated = True
 
+    def __start_subtask(self):
+
+        """ start the next task, if any """
+
+        if self.subtask is not None:
+            allocate_task(task=self.subtask)
+
     def __print_progress(self):
+
+        """ print progress information """
+
         self.percentage = int((self.progress * 100) / self.length)
 
         if self.percentage <= 100:
@@ -76,8 +96,8 @@ class Task(ABC):
 
 class CookTask(Task):
 
-    def __init__(self, name, length, min_progress, difficulty,
-                 color="grey", write_on_terminal=True, verbose=False, attrs=None):
+    def __init__(self, name, length, min_progress, difficulty, subtask=None,
+                 color="grey", write_on_terminal=True, verbose=False, attrs=None, description=""):
         super(CookTask, self).__init__(name=name,
                                        length=length,
                                        subjects=[Subject.COOKERS, Subject.KITCHEN, Subject.INGREDIENTS],
@@ -86,7 +106,9 @@ class CookTask(Task):
                                        color=color,
                                        write_on_terminal=write_on_terminal,
                                        verbose=verbose,
-                                       attrs=attrs)
+                                       attrs=attrs,
+                                       description=description,
+                                       subtask=subtask)
 
     def metric(self, skill):
 
@@ -99,8 +121,8 @@ class CookTask(Task):
 
 class DishOutTask(Task):
 
-    def __init__(self, name, length, min_progress, difficulty,
-                 color="grey", write_on_terminal=True, verbose=False, attrs=None):
+    def __init__(self, name, length, min_progress, difficulty, subtask=None,
+                 color="grey", write_on_terminal=True, verbose=False, attrs=None, description=""):
         super(DishOutTask, self).__init__(name=name,
                                           length=length,
                                           subjects=[Subject.DISH, Subject.TRAYS],
@@ -109,7 +131,9 @@ class DishOutTask(Task):
                                           color=color,
                                           write_on_terminal=write_on_terminal,
                                           verbose=verbose,
-                                          attrs=attrs)
+                                          attrs=attrs,
+                                          description=description,
+                                          subtask=subtask)
 
     def metric(self, skill):
 
@@ -122,8 +146,8 @@ class DishOutTask(Task):
 
 class HandlePaymentTask(Task):
 
-    def __init__(self, name, length, min_progress, difficulty,
-                 color="grey", write_on_terminal=True, verbose=False, attrs=None):
+    def __init__(self, name, length, min_progress, difficulty, subtask=None,
+                 color="grey", write_on_terminal=True, verbose=False, attrs=None, description=""):
         super(HandlePaymentTask, self).__init__(name=name,
                                                 length=length,
                                                 subjects=[Subject.DISH, Subject.TRAYS],
@@ -132,7 +156,9 @@ class HandlePaymentTask(Task):
                                                 color=color,
                                                 write_on_terminal=write_on_terminal,
                                                 verbose=verbose,
-                                                attrs=attrs)
+                                                attrs=attrs,
+                                                description=description,
+                                                subtask=subtask)
 
     def metric(self, skill):
 

@@ -127,6 +127,7 @@ class Auctioneer(threading.Thread):
                 # no bids receive but re-allocate the task
                 self.__reallocate(why="no bids received!")
         else:
+            self.task.allocated = True
             self.logger.log(message="There is a winner -> {win}".format(win=self.winner))
             close_message = CloseMessage(auction_id=self.auction_id,
                                          winner_id=self.winner)
@@ -196,6 +197,7 @@ class Auctioneer(threading.Thread):
 
         """ reallocate the same task changing the auction id """
 
+        self.task.allocated = False
         self.logger.log(message="I need to reallocate the {name} task since ".format(name=self.task.logger.name) + why)
 
         self.auction_id = self.auction_id + str(random.randint(0, MAX_ID))

@@ -16,6 +16,7 @@ class Monitor(threading.Thread):
     BASE_DESCRIPTION = "DESCRIPTION"
     BASE_TOPIC = "TOPIC"
     BASE_TASK = "TASKS"
+    BASE_PROGRESS = "PROGRESS"
 
     def __init__(self, tasks, agents, refresh_rate=1):
         super(Monitor, self).__init__()
@@ -32,9 +33,10 @@ class Monitor(threading.Thread):
                                                                               Monitor.BASE_STATE,
                                                                               Monitor.BASE_DESCRIPTION,
                                                                               Monitor.BASE_TOPIC)
-        self.task_header = "**{0: ^30s}**{1: ^82}**{2: ^30s}**".format(Monitor.BASE_TASK,
-                                                                       Monitor.BASE_DESCRIPTION,
-                                                                       Monitor.BASE_TOPIC)
+        self.task_header = "**{0: ^30s}**{1: ^30s}**{2: ^50s}**{3: ^30s}**".format(Monitor.BASE_TASK,
+                                                                                   Monitor.BASE_STATE,
+                                                                                   Monitor.BASE_PROGRESS,
+                                                                                   Monitor.BASE_TOPIC)
 
     def __check_termination(self):
         for t in self.tasks:
@@ -77,9 +79,9 @@ class Monitor(threading.Thread):
         print(self.border)
         for t in self.tasks:
             state = colored("terminated!", "red") if t.terminated \
-                else colored("in execution.. {}% complete".format(t.percentage), "green") \
-                    if t.progress != 0 else colored("to be allocated", "grey")
-            line = "**{0: ^30s}**{1: ^91s}**{2: ^30s}**".format(t.logger.name, state, get_topic(t.subjects).value)
+                else colored("allocated", "green") if t.allocated else colored("to be allocated..", "blue")
+            progress = "{}% complete..".format(t.percentage) if t.progress != 0 else "not yet started!"
+            line = "**{0: ^30s}**{1: ^39s}**{2: ^50s}**{3: ^30s}**".format(t.logger.name, state, progress, get_topic(t.subjects).value)
             cprint(line)
         print(self.border)
 
@@ -90,4 +92,5 @@ class Monitor(threading.Thread):
             time.sleep(self.refresh_rate)
         for a in self.agents:
             a.occupied = False
+            a.executing = False
         self.__print_monitor()

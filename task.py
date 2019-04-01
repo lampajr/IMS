@@ -50,6 +50,7 @@ class Task(ABC):
         self.progress = 0
         self.previous_progress = -1000000
         self.terminated = False
+        self.allocated = False
 
     @abstractmethod
     def metric(self, skill):

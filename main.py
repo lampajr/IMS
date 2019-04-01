@@ -9,8 +9,8 @@ from utility import *
 
 
 if __name__ == '__main__':
-    contract_time = 40
-    min_progress = 0
+    contract_time = 5
+    min_progress = 20
 
     ##### TASKS ####
     tasks = []
@@ -79,59 +79,59 @@ if __name__ == '__main__':
 
     agent1 = Agent(name="Main-Chef",
                    topic=Topic.COOK,
-                   contract_time=contract_time+50,
+                   contract_time=contract_time,
                    skill=Skill(speed=70, stars=3, energy=100))
 
     agent2 = Agent(name="Chef-Marco",
                    topic=Topic.COOK,
-                   contract_time=contract_time+50,
+                   contract_time=contract_time,
                    skill=Skill(speed=70, stars=3, energy=100))
 
     agent3 = Agent(name="Sub-Chef-Hilary",
                    topic=Topic.COOK,
-                   contract_time=contract_time+50,
+                   contract_time=contract_time,
                    skill=Skill(speed=60, stars=3, energy=100))
 
     agent4 = Agent(name="Sub-Chef-Michael",
                    topic=Topic.COOK,
-                   contract_time=contract_time+50,
+                   contract_time=contract_time,
                    skill=Skill(speed=75, stars=3, energy=100))
 
     agent7 = Agent(name="Waiter-George",
                    topic=Topic.DISH_OUT,
-                   contract_time=contract_time+50,
+                   contract_time=contract_time,
                    skill=Skill(speed=80, cleverness=3, energy=100))
 
     agent8 = Agent(name="Waiter-Mike",
                    topic=Topic.DISH_OUT,
-                   contract_time=contract_time+50,
+                   contract_time=contract_time,
                    skill=Skill(speed=90, cleverness=3, energy=100))
 
     agent9 = Agent(name="Waiter-George",
                    topic=Topic.DISH_OUT,
-                   contract_time=contract_time+50,
+                   contract_time=contract_time,
                    skill=Skill(speed=40, cleverness=80, energy=100))
 
     agent10 = Agent(name="Waiter-Mike",
                     topic=Topic.DISH_OUT,
-                    contract_time=contract_time+50,
+                    contract_time=contract_time,
                     skill=Skill(speed=20, cleverness=20, energy=100))
 
     agent11 = Agent(name="Cashier-Melania",
                     topic=Topic.HANDLE_PAYMENTS,
-                    contract_time=contract_time+50,
+                    contract_time=contract_time,
                     skill=Skill(speed=50, cleverness=50, energy=100))
 
     agent12 = Agent(name="Cashier-John",
                     topic=Topic.HANDLE_PAYMENTS,
-                    contract_time=contract_time+50,
+                    contract_time=contract_time,
                     skill=Skill(speed=70, cleverness=60, energy=100))
 
     agents = [agent1, agent2, agent3, agent4, agent7, agent8, agent9, agent10, agent11, agent12]
 
     ##### AUCTIONEERS #####
 
-    Monitor(tasks=tasks, agents=agents, refresh_rate=2).start()
+    Monitor(tasks=tasks, agents=agents, refresh_rate=0.05).start()
 
     for t in tasks:
         try:

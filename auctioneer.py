@@ -28,7 +28,7 @@ class Auctioneer(threading.Thread):
                  contract_time,
                  discard_task=False,
                  write_on_terminal=True,
-                 verbose=False,
+                 verbose=True,
                  attrs=None,
                  color=None,
                  level=0):
@@ -80,15 +80,18 @@ class Auctioneer(threading.Thread):
         self.__clear_bids()
         task_announcement_message = AnnouncementMessage(auction_id=self.auction_id,
                                                         task=self.task)
-        if self.task.progress == 0:
-            # new task
-            self.logger.log(message="New task to allocate: {name}".format(name=self.task.logger.name))
-        else:
-            # reallocation
-            self.logger.log(message="Task reallocation of {name}".format(name=self.task.logger.name))
-        self.logger.log(message="Sending TASK ANNOUNCEMENT message on {top} topic..".format(top=self.topic.value.upper()))
-        pub.sendMessage(topicName=self.topic.value, arg1=task_announcement_message)
-        self.logger.log(message="Awaiting bids..")
+
+        if not self.task.terminated:
+            if self.task.progress == 0:
+                # new task
+                self.logger.log(message="New task to allocate: {name}".format(name=self.task.logger.name))
+            else:
+                # reallocation
+                self.logger.log(message="Task reallocation of {name}".format(name=self.task.logger.name))
+            self.logger.log(message="Sending TASK ANNOUNCEMENT message on {top} topic..".format(top=self.topic.value.upper()))
+            pub.sendMessage(topicName=self.topic.value, arg1=task_announcement_message)
+            self.logger.log(message="Awaiting bids..")
+
 
         # wait bids for auction_timeout time
         time.sleep(self.auction_timeout)
@@ -99,16 +102,17 @@ class Auctioneer(threading.Thread):
 
         """ renewal a pre-existing contract sending RENEWAL message on the topic """
 
-        renewal_id = random.randint(0, MAX_ID)
-        self.acks.append(renewal_id)
+        if not self.task.terminated:
+            renewal_id = random.randint(0, MAX_ID)
+            self.acks.append(renewal_id)
 
-        renewal_message = RenewalMessage(auction_id=self.auction_id,
-                                         winner_id=self.winner,
-                                         renewal_id=renewal_id)
+            renewal_message = RenewalMessage(auction_id=self.auction_id,
+                                             winner_id=self.winner,
+                                             renewal_id=renewal_id)
 
-        self.last_renewal = get_time()
-        self.logger.log(message="Sending RENEWAL message of {}..".format(self.task.logger.name))
-        pub.sendMessage(topicName=self.topic.value, arg1=renewal_message)
+            self.last_renewal = get_time()
+            self.logger.log(message="Sending RENEWAL message of {}..".format(self.task.logger.name))
+            pub.sendMessage(topicName=self.topic.value, arg1=renewal_message)
 
     def close_auction(self):
 
@@ -191,14 +195,17 @@ class Auctioneer(threading.Thread):
             self.__reallocate(why="the progress wasn't enough!")
         else:
             # The task was terminated
+            pub.unsubscribe(self.on_message_received, topicName=self.topic.value)
             self.task_terminated = True
 
     def __reallocate(self, why=""):
 
         """ reallocate the same task changing the auction id """
 
+
         self.task.allocated = False
         self.logger.log(message="I need to reallocate the {name} task since ".format(name=self.task.logger.name) + why)
 
         self.auction_id = self.auction_id + str(random.randint(0, MAX_ID))
-        self.allocate_task(task=self.task)
+        if not self.task.terminated:
+            self.allocate_task(task=self.task)

@@ -25,6 +25,7 @@ class Agent(threading.Thread):
     """ Agent implementation """
 
     BASE_NAME = "Agent"
+    MAX_RANDOM_PROGRESS = 150
 
     def __init__(self,
                  name,
@@ -56,31 +57,40 @@ class Agent(threading.Thread):
         self.logger.log(message="I'm {name} with {id} id and {top} topic!!".format(name=self.logger.name,
                                                                                    id=self.agent_id,
                                                                                    top=self.topic.value))
-        pub.subscribe(self.on_message_received, topicName=self.topic.value)
+        self.__subscribe()
 
-    def invalidate(self):
+    def invalidate(self, value=4):
 
         """ fail the current agent """
 
         self.failed = True
         self.__reset()
         self.logger.log(message="I'm failed!! :(")
+        self.__unsubscribe()
+        time.sleep(value)
+        self.repair()
 
     def repair(self):
 
         """ repair the current agent """
 
-        self.failed = False
-        self.__reset()
-        self.logger.log(message="I'm back! :)")
+        if self.failed:
+            self.failed = False
+            self.__reset()
+            self.__subscribe()
+            self.logger.log(message="I'm back! :)")
 
     def on_message_received(self, arg1):
 
         """ callback methods called whenever a new message is received on my topic """
 
+
         # discard any message if the agent has failed
         if self.failed:
             return
+
+        # whenever you receive a message unsubscribe to the topic
+        self.__unsubscribe()
 
         # this means that the auctioneer has reallocated my task
         # limit needs to be the same or greater wrt the contract limit of
@@ -88,14 +98,15 @@ class Agent(threading.Thread):
         if self.executing and self.last_renewal is not None and ((get_time() - self.last_renewal) / 1000) > self.contract_time:
             # invalidate myself for a while
             self.invalidate()
-            time.sleep(5)
-            self.repair()
 
         if not self.failed:
             if arg1.msg_type == MessageType.ANNOUNCEMENT:
                 if not self.occupied:
                     self.logger.log("New message received = " + str(arg1.msg_type.name))
                     self.on_announce(msg=arg1)
+                elif arg1.task == self.current_task:
+                    # the auctioneer is trying to reallocate my task, this means i've failed
+                    self.invalidate()
             elif arg1.msg_type == MessageType.RENEWAL and self.current_auction is not None \
                     and arg1.auction_id == self.current_auction and arg1.winner_id == self.agent_id:
                 self.logger.log("New message received = " + str(arg1.msg_type.name))
@@ -104,6 +115,9 @@ class Agent(threading.Thread):
             elif arg1.msg_type == MessageType.CLOSE and not self.executing and self.occupied:
                 self.logger.log("New message received = " + str(arg1.msg_type.name))
                 self.on_close(msg=arg1)
+
+        # after handling the message returns subscribing
+        self.__subscribe()
 
     def on_announce(self, msg):
 
@@ -155,7 +169,7 @@ class Agent(threading.Thread):
 
     def __execute_task(self):
         try:
-            self.current_task.execute(value=random.randint(0, 100))
+            self.current_task.execute(value=random.randint(0, Agent.MAX_RANDOM_PROGRESS))
             self.logger.log("I'm performing the task..")
             if self.current_task.terminated:
                 self.__reset()
@@ -169,3 +183,9 @@ class Agent(threading.Thread):
         self.executing = False
         self.last_renewal = None
         self.logger.color = None
+
+    def __subscribe(self):
+        pub.subscribe(self.on_message_received, topicName=self.topic.value)
+
+    def __unsubscribe(self):
+        pub.unsubscribe(self.on_message_received, topicName=self.topic.value)

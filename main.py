@@ -10,7 +10,7 @@ from utility import *
 
 if __name__ == '__main__':
     contract_time = 5
-    min_progress = 20
+    min_progress = 40
 
     ##### TASKS ####
     tasks = []
@@ -131,7 +131,7 @@ if __name__ == '__main__':
 
     ##### AUCTIONEERS #####
 
-    Monitor(tasks=tasks, agents=agents, refresh_rate=0.05).start()
+    Monitor(tasks=tasks, agents=agents, refresh_rate=1).start()
 
     for t in tasks:
         try:

@@ -4,76 +4,113 @@ from monitor import Monitor
 from task import *
 from utility import *
 
-# TODO: change metric computation
-# TODO: setup state of the agent (think if add env or not)
-
 
 if __name__ == '__main__':
     contract_time = 5
-    min_progress = 40
+    cook_min_progress = 30
+    serve_min_progress = 10
+    handle_payments_min_progress = 5
 
     ##### TASKS ####
     tasks = []
+    all_tasks = []
 
-    task1_2 = DishOutTask(name="dish-out-amatriciana",
-                          length=200,
-                          min_progress=min_progress,
-                          difficulty=5,
-                          color="yellow",
-                          write_on_terminal=True,
-                          description="dish out pasta all'amatriciana")
+    task1_1_1 = HandlePaymentTask(name="pay-amatriciana",
+                                  length=200,
+                                  min_progress=handle_payments_min_progress,
+                                  difficulty=2,
+                                  color="yellow",
+                                  write_on_terminal=True,
+                                  description="pay pasta all'amatriciana")
+
+    task1_1 = ServeTask(name="serve-amatriciana",
+                        length=300,
+                        min_progress=serve_min_progress,
+                        difficulty=5,
+                        color="yellow",
+                        write_on_terminal=True,
+                        description="serve pasta all'amatriciana",
+                        subtask=task1_1_1)
+
 
     task1 = CookTask(name="amatriciana",
-                     length=200,
-                     min_progress=min_progress,
+                     length=400,
+                     min_progress=cook_min_progress,
                      difficulty=5,
                      color="yellow",
                      write_on_terminal=True,
                      description="cooking amatriciana",
-                     subtask=task1_2)
+                     subtask=task1_1)
+
     tasks.append(task1)
+    all_tasks.append(task1)
+    all_tasks.append(task1_1)
+    all_tasks.append(task1_1_1)
+
+    task2_1_1 = HandlePaymentTask(name="pay-carbonara",
+                                  length=200,
+                                  min_progress=handle_payments_min_progress,
+                                  difficulty=5,
+                                  color="blue",
+                                  write_on_terminal=True,
+                                  description="pay pasta all'amatriciana")
+
+    task2_1 = ServeTask(name="serve-amatriciana",
+                        length=300,
+                        min_progress=serve_min_progress,
+                        difficulty=5,
+                        color="blue",
+                        write_on_terminal=True,
+                        description="serve pasta all'amatriciana",
+                        subtask=task2_1_1)
 
     task2 = CookTask(name="carbonara",
-                     length=300,
-                     min_progress=min_progress,
+                     length=350,
+                     min_progress=cook_min_progress,
                      difficulty=5,
                      color="blue",
                      write_on_terminal=True,
-                     description="cooking carbonara with guanciale")
+                     description="cooking carbonara with guanciale",
+                     subtask=task2_1)
 
     tasks.append(task2)
+    all_tasks.append(task2)
+    all_tasks.append(task2_1)
+    all_tasks.append(task2_1_1)
 
     task3 = CookTask(name="risotto",
                      length=500,
-                     min_progress=min_progress,
+                     min_progress=cook_min_progress,
                      difficulty=5,
                      color="cyan",
                      write_on_terminal=True,
                      description="cooking risotto with zafferano")
 
     tasks.append(task3)
+    all_tasks.append(task3)
 
     task4 = CookTask(name="puttanesca",
                      length=200,
-                     min_progress=min_progress,
+                     min_progress=cook_min_progress,
                      difficulty=5,
                      color="magenta",
                      write_on_terminal=True,
                      description="cooking puttanesca")
 
     tasks.append(task4)
+    all_tasks.append(task4)
 
     task5 = CookTask(name="scoglio",
                      length=250,
-                     min_progress=min_progress,
+                     min_progress=cook_min_progress,
                      difficulty=5,
                      color="yellow",
                      write_on_terminal=True,
                      description="cooking pasta allo scoglio")
 
     tasks.append(task5)
+    all_tasks.append(task5)
 
-    tasks.append(task1_2)
 
     #### AGENTS #####
 
@@ -98,22 +135,22 @@ if __name__ == '__main__':
                    skill=Skill(speed=75, stars=3, energy=100))
 
     agent7 = Agent(name="Waiter-George",
-                   topic=Topic.DISH_OUT,
+                   topic=Topic.SERVE,
                    contract_time=contract_time,
                    skill=Skill(speed=80, cleverness=3, energy=100))
 
     agent8 = Agent(name="Waiter-Mike",
-                   topic=Topic.DISH_OUT,
+                   topic=Topic.SERVE,
                    contract_time=contract_time,
                    skill=Skill(speed=90, cleverness=3, energy=100))
 
     agent9 = Agent(name="Waiter-George",
-                   topic=Topic.DISH_OUT,
+                   topic=Topic.SERVE,
                    contract_time=contract_time,
                    skill=Skill(speed=40, cleverness=80, energy=100))
 
     agent10 = Agent(name="Waiter-Mike",
-                    topic=Topic.DISH_OUT,
+                    topic=Topic.SERVE,
                     contract_time=contract_time,
                     skill=Skill(speed=20, cleverness=20, energy=100))
 
@@ -131,7 +168,7 @@ if __name__ == '__main__':
 
     ##### AUCTIONEERS #####
 
-    Monitor(tasks=tasks, agents=agents, refresh_rate=1).start()
+    Monitor(tasks=all_tasks, agents=agents, refresh_rate=1).start()
 
     for t in tasks:
         try:

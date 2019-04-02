@@ -79,7 +79,8 @@ class Monitor(threading.Thread):
         print(self.border)
         for t in self.tasks:
             state = colored("terminated!", "red") if t.terminated \
-                else colored("allocated", "green") if t.allocated else colored("to be allocated..", "blue")
+                else colored("allocated", "green") if t.allocated else colored("to be allocated..", "blue") \
+                if t.generated else colored("not yet generated", "grey")
             progress = "{}% complete..".format(t.percentage) if t.progress != 0 else "not yet started!"
             line = "**{0: ^30s}**{1: ^39s}**{2: ^50s}**{3: ^30s}**".format(t.logger.name, state, progress, get_topic(t.subjects).value)
             cprint(line)

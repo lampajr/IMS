@@ -68,7 +68,7 @@ class Topic(Enum):
 
     COOK = 'cook'
     HANDLE_PAYMENTS = 'handle_payments'
-    DISH_OUT = 'dish_out'
+    SERVE = 'serve'
 
 
 class Subject(Enum):
@@ -115,7 +115,7 @@ def get_subjects(topic):
         return [Subject.COOKERS, Subject.KITCHEN, Subject.INGREDIENTS]
     elif topic == Topic.HANDLE_PAYMENTS:
         return [Subject.TRAYS, Subject.DISH]
-    elif topic == Topic.DISH_OUT:
+    elif topic == Topic.SERVE:
         return [Subject.CASH_DESK]
 
 
@@ -127,7 +127,7 @@ def get_topic(subjects):
     if Subject.COOKERS in subjects and Subject.KITCHEN in subjects and Subject.INGREDIENTS in subjects:
         return Topic.COOK
     elif Subject.DISH in subjects and Subject.TRAYS in subjects:
-        return Topic.DISH_OUT
+        return Topic.SERVE
     elif Subject.CASH_DESK in subjects:
         return Topic.HANDLE_PAYMENTS
     else:

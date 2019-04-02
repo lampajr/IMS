@@ -28,7 +28,7 @@ class Auctioneer(threading.Thread):
                  contract_time,
                  discard_task=False,
                  write_on_terminal=True,
-                 verbose=True,
+                 verbose=False,
                  attrs=None,
                  color=None,
                  level=0):
@@ -146,6 +146,7 @@ class Auctioneer(threading.Thread):
         self.task = task
         self.topic = get_topic(task.subjects)
         self.logger.color = self.task.logger.color
+        self.task.generated = True
         if not self.is_alive():
             self.start()
         else:

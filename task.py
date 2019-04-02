@@ -51,6 +51,7 @@ class Task(ABC):
         self.previous_progress = -1000000
         self.terminated = False
         self.allocated = False
+        self.generated = False
 
     @abstractmethod
     def metric(self, skill):
@@ -74,6 +75,8 @@ class Task(ABC):
 
         if self.progress >= self.length:
             self.terminated = True
+            # start the subtask if any
+            self.__start_subtask()
 
     def __start_subtask(self):
 
@@ -120,21 +123,21 @@ class CookTask(Task):
         return deterministic_fitness + random_fitness
 
 
-class DishOutTask(Task):
+class ServeTask(Task):
 
     def __init__(self, name, length, min_progress, difficulty, subtask=None,
                  color="grey", write_on_terminal=True, verbose=False, attrs=None, description=""):
-        super(DishOutTask, self).__init__(name=name,
-                                          length=length,
-                                          subjects=[Subject.DISH, Subject.TRAYS],
-                                          min_progress=min_progress,
-                                          difficulty=difficulty,
-                                          color=color,
-                                          write_on_terminal=write_on_terminal,
-                                          verbose=verbose,
-                                          attrs=attrs,
-                                          description=description,
-                                          subtask=subtask)
+        super(ServeTask, self).__init__(name=name,
+                                        length=length,
+                                        subjects=[Subject.DISH, Subject.TRAYS],
+                                        min_progress=min_progress,
+                                        difficulty=difficulty,
+                                        color=color,
+                                        write_on_terminal=write_on_terminal,
+                                        verbose=verbose,
+                                        attrs=attrs,
+                                        description=description,
+                                        subtask=subtask)
 
     def metric(self, skill):
 
@@ -151,7 +154,7 @@ class HandlePaymentTask(Task):
                  color="grey", write_on_terminal=True, verbose=False, attrs=None, description=""):
         super(HandlePaymentTask, self).__init__(name=name,
                                                 length=length,
-                                                subjects=[Subject.DISH, Subject.TRAYS],
+                                                subjects=[Subject.CASH_DESK],
                                                 min_progress=min_progress,
                                                 difficulty=difficulty,
                                                 color=color,

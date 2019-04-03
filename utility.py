@@ -63,6 +63,17 @@ class Logger:
         pass
 
 
+class Skill:
+
+    """ represents the skills of an agent """
+
+    def __init__(self, energy=100, cleverness=0, speed=0, stars=0):
+        self.energy = energy            # value from 0 to 100
+        self.cleverness = cleverness    # value from 0 to 100
+        self.speed = speed              # value from 0 to 100
+        self.stars = stars              # michelin's star 0 to 3
+
+
 class Topic(Enum):
     """ Topics enumeration """
 
@@ -119,7 +130,7 @@ def get_subjects(topic):
         return [Subject.CASH_DESK]
 
 
-def get_topic(subjects):
+def get_topic_from_subjects(subjects):
 
     """ function that given the list of subjects returns
         the corresponding topic over which negotiate """
@@ -132,3 +143,33 @@ def get_topic(subjects):
         return Topic.HANDLE_PAYMENTS
     else:
         print('There are no valid resources!!')
+
+
+def get_topic_from_string(name):
+
+    """ given a string returns its topic """
+
+    if name == "cook":
+        return Topic.COOK
+    elif name == "serve":
+        return Topic.SERVE
+    elif name == "handle_payments":
+        return Topic.HANDLE_PAYMENTS
+
+
+def get_boolean(value):
+
+    """ convert a string into boolean obj """
+
+    return value == "True" or value == "true"
+
+
+def create_skill(skill_elements):
+
+    """ given a '-' separated list of values returns a new skill obj """
+
+    elements = skill_elements.split('-')
+    return Skill(energy=int(elements[0]),
+                 cleverness=int(elements[1]),
+                 speed=int(elements[2]),
+                 stars=int(elements[3]))

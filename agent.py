@@ -3,21 +3,9 @@ import threading
 import time
 
 from pubsub import pub
-from termcolor import cprint
 
 from message import BidMessage, AcknowledgementMessage
 from utility import MAX_ID, Logger, get_time, MessageType
-
-
-class Skill:
-
-    """ represents the skills of an agent """
-
-    def __init__(self, energy=100, cleverness=0, speed=0, stars=0):
-        self.energy = energy            # value from 0 to 100
-        self.cleverness = cleverness    # value from 0 to 100
-        self.speed = speed              # value from 0 to 100
-        self.stars = stars              # michelin's star 0 to 3
 
 
 class Agent(threading.Thread):

@@ -4,7 +4,7 @@ import time
 from os import name, system
 from termcolor import cprint, colored
 
-from utility import get_topic
+from utility import get_topic_from_subjects
 
 
 class Monitor(threading.Thread):
@@ -87,7 +87,7 @@ class Monitor(threading.Thread):
                 else colored("allocated", "green") if t.allocated else colored("to be allocated..", "blue") \
                 if t.generated else colored("not yet generated", "grey")
             progress = "{}% complete..".format(t.percentage) if t.progress != 0 else "not yet started!"
-            line = "**{0: ^30s}**{1: ^39s}**{2: ^50s}**{3: ^30s}**".format(t.logger.name, state, progress, get_topic(t.subjects).value)
+            line = "**{0: ^30s}**{1: ^39s}**{2: ^50s}**{3: ^30s}**".format(t.logger.name, state, progress, get_topic_from_subjects(t.subjects).value)
             cprint(line)
         print(self.border)
 

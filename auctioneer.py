@@ -144,7 +144,7 @@ class Auctioneer(threading.Thread):
         """ insert a new task in the environment that has to be allocated """
 
         self.task = task
-        self.topic = get_topic(task.subjects)
+        self.topic = get_topic_from_subjects(task.subjects)
         self.logger.color = self.task.logger.color
         self.task.generated = True
         if not self.is_alive():

@@ -83,9 +83,9 @@ class Agent(threading.Thread):
         # this means that the auctioneer has reallocated my task
         # limit needs to be the same or greater wrt the contract limit of
         # the auctioneer
-        if self.executing and self.last_renewal is not None and ((get_time() - self.last_renewal) / 1000) > self.contract_time:
-            # invalidate myself for a while
-            self.invalidate()
+        #if self.executing and self.last_renewal is not None and ((get_time() - self.last_renewal) / 1000) > self.contract_time:
+        #    # invalidate myself for a while
+        #    self.invalidate()
 
         if not self.failed:
             if arg1.msg_type == MessageType.ANNOUNCEMENT:
@@ -136,7 +136,7 @@ class Agent(threading.Thread):
             self.logger.log(message="I'm going to execute the task..")
             self.executing = True
             self.logger.color = self.current_task.logger.color
-            self.__execute_task()
+            #self.__execute_task()
 
 
     def on_renewal(self, msg):
@@ -161,8 +161,14 @@ class Agent(threading.Thread):
             self.logger.log("I'm performing the task..")
             if self.current_task.terminated:
                 self.__reset()
+            else:
+                self.__check_progress()
         except AttributeError:
             pass
+
+    def __check_progress(self):
+        if (self.current_task.progress - self.current_task.previous_progress) < self.current_task.min_progress:
+            self.invalidate(value=7)
 
     def __reset(self):
         self.current_task = None

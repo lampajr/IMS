@@ -13,11 +13,17 @@ class Loader:
         self.n_agents = 0
         self.n_tasks = 0
         self.auctioneer_contract_time = 0
+        self.auction_timeout = 4
 
         # lists
         self.agents = []
         self.starter_tasks = []  # will contain only the started task (cook topic)
         self.tasks = []  # will contain all the tasks involved
+
+        self.time_between_task = 5  # seconds between two consecutive task generation
+        self.refresh_rate = 1  # refresh rate of the monitor
+
+        self.__load_data(filename=filename)
 
     def __load_data(self, filename):
         with open(filename, "r") as file:
@@ -27,7 +33,7 @@ class Loader:
             for idx in range(self.n_agents):
                 # the line representing the agent has to be in comma separated values
                 # all the elements must be reported
-                elements = file.readline().split(",")
+                elements = file.readline().rstrip().split(",")
                 self.agents.append(Agent(name=elements[0],
                                          topic=get_topic_from_string(elements[1]),
                                          contract_time=int(elements[2]),
@@ -41,7 +47,7 @@ class Loader:
             for idx in range(self.n_tasks):
                 # each line represent a list of task where the task in position i+1 is
                 # a subtask of the one in position i, each task is '-' separated
-                tasks_list = file.readline().split('-')
+                tasks_list = file.readline().rstrip().split('-')
                 current_tasks = []
                 for task_info in tasks_list:
                     # each task stores info in comma separated values
@@ -85,5 +91,12 @@ class Loader:
 
                 # add subtasks
                 for i, t in enumerate(current_tasks):
+                    if i == 0:
+                        self.starter_tasks.append(t)
                     if i != len(current_tasks) - 1:
                         t.subtask = current_tasks[i+1]
+                    self.tasks.append(t)
+
+            self.time_between_task = int(file.readline())
+            self.refresh_rate = int(file.readline())
+            self.auction_timeout = int(file.readline())

@@ -186,7 +186,7 @@ class Auctioneer(threading.Thread):
         while not self.task.terminated and (self.task.progress - self.task.previous_progress) >= self.task.min_progress:
             self.renewal_contract()
             # wait some seconds
-            time.sleep(4)
+            time.sleep(2)
             if len(self.acks) != 0:
                 # no last renewal's ack received
                 self.__reallocate(why="no ack received!")
@@ -205,6 +205,7 @@ class Auctioneer(threading.Thread):
 
 
         self.task.allocated = False
+        self.task.previous_progress = -1000000
         self.logger.log(message="I need to reallocate the {name} task since ".format(name=self.task.logger.name) + why)
 
         self.auction_id = self.auction_id + str(random.randint(0, MAX_ID))

@@ -1,0 +1,18 @@
+11
+Main chef George,cook,5,100-100-70-3,true,false
+Chef Marco,cook,5,100-100-70-3,true,false
+Chef Lucas,cook,5,100-100-60-2,true,false
+Chef Hilary,cook,5,100-100-75-1,true,false
+Waiter Benjamin,serve,5,100-80-80-0,true,false
+Waiter Peter,serve,5,100-85-75-0,true,false
+Waiter Bernard,serve,5,100-90-60-0,true,false
+Waiter Antonio,serve,5,100-60-100-0,true,false
+Cashier Thomas,handle_payments,5,100-80-50-0,true,false
+Cashier Melania,handle_payments,5,100-50-70-0,true,false
+Cashier John,handle_payments,5,100-60-90-0,true,false
+2
+amatriciana dish,300,cook,30,4,magenta,true,false,cooking amatriciana dish-amatriciana service,150,serve,10,3,magenta,true,false,serve amatriciana dish
+carbonara dish,500,cook,30,5,yellow,true,false,cooking carbonara dish-carbonara service,150,serve,10,3,yellow,true,false,serve carbonara dish
+5
+1
+3

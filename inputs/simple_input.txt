@@ -1,0 +1,10 @@
+4
+Main chef George,cook,5,100-100-70-3,true,false
+Chef Marco,cook,5,100-100-70-3,true,false
+Chef Lucas,cook,5,100-100-60-2,true,false
+Chef Hilary,cook,5,100-100-75-1,true,false
+1
+amatriciana dish,800,cook,60,4,magenta,true,false,cooking amatriciana dish
+5
+1
+3

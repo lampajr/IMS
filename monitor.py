@@ -18,11 +18,13 @@ class Monitor(threading.Thread):
     BASE_TASK = "TASKS"
     BASE_PROGRESS = "PROGRESS"
 
-    def __init__(self, tasks, agents, refresh_rate=1):
+    def __init__(self, tasks, agents, clear=True, refresh_rate=1):
         super(Monitor, self).__init__()
         self.tasks = tasks
         self.agents = agents
         self.refresh_rate = refresh_rate  # in seconds
+        self.clear= clear
+
         self.name_width = 30
         self.state_width = 30
         self.description_width = 30
@@ -61,7 +63,8 @@ class Monitor(threading.Thread):
             and of all the tasks executed and that have to be executed """
 
         # TODO: clear the terminal before printing the monitor
-        self.__clear()
+        if self.clear:
+            self.__clear()
         # Agents' monitor
         print(self.border)
         print(self.header)

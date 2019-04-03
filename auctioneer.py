@@ -1,6 +1,4 @@
-import random
 import threading
-import time
 
 from utility import *
 from message import *
@@ -45,6 +43,7 @@ class Auctioneer(threading.Thread):
         self.bids = []
         self.acks = []
         self.winner = None
+        self.failed_agents = []
         self.opened = False
         self.task = None
         self.task_terminated = False
@@ -170,6 +169,9 @@ class Auctioneer(threading.Thread):
             pass
 
     def __compute_winner(self):
+        valid_bids = [(a_id, a_bid) for (a_id, a_bid) in self.bids if a_id not in self.failed_agents]
+        if len(valid_bids) != 0:
+            self.bids = valid_bids
         if len(self.bids) != 0:
             # compute the best bid among all the received ones
             winner = self.bids[0]
@@ -209,5 +211,6 @@ class Auctioneer(threading.Thread):
         self.logger.log(message="I need to reallocate the {name} task since ".format(name=self.task.logger.name) + why)
 
         self.auction_id = self.auction_id + str(random.randint(0, MAX_ID))
+        self.failed_agents.append(self.winner)
         if not self.task.terminated:
             self.allocate_task(task=self.task)

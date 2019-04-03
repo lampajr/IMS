@@ -34,12 +34,14 @@ class Agent(threading.Thread):
         self.topic = topic
         self.contract_time = contract_time
         self.failed = False
+        self.time_failed = 0
+        self.fail_duration = None
         self.occupied = False
         self.executing = False
         self.current_task = None
         self.current_auction = None
         self.last_renewal = None
-        self.run()
+        self.start()
 
     def run(self):
         self.logger.log(message="I'm {name} with {id} id and {top} topic!!".format(name=self.logger.name,
@@ -52,11 +54,12 @@ class Agent(threading.Thread):
         """ fail the current agent """
 
         self.failed = True
+        self.time_failed = get_time()
+        self.fail_duration = value
         self.__reset()
         self.logger.log(message="I'm failed!! :(")
-        self.__unsubscribe()
-        time.sleep(value)
-        self.repair()
+        #self.__unsubscribe()
+        self.__update_subscribing()
 
     def repair(self):
 
@@ -65,7 +68,8 @@ class Agent(threading.Thread):
         if self.failed:
             self.failed = False
             self.__reset()
-            self.__subscribe()
+            #self.__subscribe()
+            self.__update_subscribing()
             self.logger.log(message="I'm back! :)")
 
     def on_message_received(self, arg1):
@@ -74,8 +78,11 @@ class Agent(threading.Thread):
 
 
         # discard any message if the agent has failed
-        if self.failed:
+        if self.failed and ((get_time() - self.time_failed) / 1000) < self.fail_duration:
             return
+
+        if self.failed and ((get_time() - self.time_failed) / 1000) >= self.fail_duration:
+            self.repair()
 
         # whenever you receive a message unsubscribe to the topic
         self.__unsubscribe()
@@ -160,6 +167,7 @@ class Agent(threading.Thread):
             self.current_task.execute(value=random.randint(0, Agent.MAX_RANDOM_PROGRESS))
             self.logger.log("I'm performing the task..")
             if self.current_task.terminated:
+                time.sleep(1)
                 self.__reset()
             else:
                 self.__check_progress()
@@ -168,7 +176,7 @@ class Agent(threading.Thread):
 
     def __check_progress(self):
         if (self.current_task.progress - self.current_task.previous_progress) < self.current_task.min_progress:
-            self.invalidate(value=7)
+            self.invalidate(value=8)
 
     def __reset(self):
         self.current_task = None
@@ -183,3 +191,7 @@ class Agent(threading.Thread):
 
     def __unsubscribe(self):
         pub.unsubscribe(self.on_message_received, topicName=self.topic.value)
+
+    def __update_subscribing(self):
+        self.__unsubscribe()
+        self.__subscribe()

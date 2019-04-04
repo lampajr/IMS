@@ -4,7 +4,18 @@ import time
 from os import name, system
 from termcolor import cprint, colored
 
-from utility import get_topic_from_subjects
+from utility import get_topic_from_subjects, get_time
+
+
+def clear():
+
+    # for windows
+    if name == 'nt':
+        _ = system('cls')
+
+        # for mac and linux(here, os.name is 'posix')
+    else:
+        _ = system('clear')
 
 
 class Monitor(threading.Thread):
@@ -30,12 +41,12 @@ class Monitor(threading.Thread):
         self.description_width = 30
         self.topic_width = 30
 
-        self.border = 150 * "*"
-        self.header = "**{0: ^30s}**{1: ^30s}**{2: ^50s}**{3: ^30s}**".format(Monitor.BASE_NAME,
+        self.border = 170 * "*"
+        self.header = "**{0: ^30s}**{1: ^30s}**{2: ^70s}**{3: ^30s}**".format(Monitor.BASE_NAME,
                                                                               Monitor.BASE_STATE,
                                                                               Monitor.BASE_DESCRIPTION,
                                                                               Monitor.BASE_TOPIC)
-        self.task_header = "**{0: ^30s}**{1: ^30s}**{2: ^50s}**{3: ^30s}**".format(Monitor.BASE_TASK,
+        self.task_header = "**{0: ^30s}**{1: ^30s}**{2: ^70s}**{3: ^30s}**".format(Monitor.BASE_TASK,
                                                                                    Monitor.BASE_STATE,
                                                                                    Monitor.BASE_PROGRESS,
                                                                                    Monitor.BASE_TOPIC)
@@ -47,15 +58,6 @@ class Monitor(threading.Thread):
         return True
 
     # define our clear function
-    def __clear(self):
-
-        # for windows
-        if name == 'nt':
-            _ = system('cls')
-
-            # for mac and linux(here, os.name is 'posix')
-        else:
-            _ = system('clear')
 
     def __print_monitor(self):
 
@@ -64,7 +66,7 @@ class Monitor(threading.Thread):
 
         # TODO: clear the terminal before printing the monitor
         if self.clear:
-            self.__clear()
+            clear()
         # Agents' monitor
         print(self.border)
         print(self.header)
@@ -72,9 +74,8 @@ class Monitor(threading.Thread):
         for a in self.agents:
             state = colored("executing", color="yellow") if a.executing else colored("occupied", color="blue") \
                 if a.occupied else colored("failed", color="red") if a.failed else colored("free", color="green")
-            description = "empty" if not a.executing else a.current_task.logger.description
-            description = a.current_task.logger.description if a.executing else "participating in auction" if a.occupied else "empty"
-            line = "**{0: ^30s}**{1: ^39s}**{2: ^50s}**{3: ^30}**".format(a.logger.name,
+            description = a.current_task.logger.description if a.executing else "participating in auction: {}".format(a.current_task.logger.name ) if a.occupied else "empty"
+            line = "**{0: ^30s}**{1: ^39s}**{2: ^70s}**{3: ^30}**".format(a.logger.name,
                                                                           state,
                                                                           description,
                                                                           a.topic.value)
@@ -90,11 +91,12 @@ class Monitor(threading.Thread):
                 else colored("allocated", "green") if t.allocated else colored("to be allocated..", "blue") \
                 if t.generated else colored("not yet generated", "grey")
             progress = "{}% complete..".format(t.percentage) if t.progress != 0 else "not yet started!"
-            line = "**{0: ^30s}**{1: ^39s}**{2: ^50s}**{3: ^30s}**".format(t.logger.name, state, progress, get_topic_from_subjects(t.subjects).value)
+            line = "**{0: ^30s}**{1: ^39s}**{2: ^70s}**{3: ^30s}**".format(t.logger.name, state, progress, get_topic_from_subjects(t.subjects).value)
             cprint(line)
         print(self.border)
 
     def run(self):
+        started_time = get_time()
         while not self.__check_termination():
             self.__print_monitor()
             print("\n\n\n\n\n\n\n\n")
@@ -103,3 +105,4 @@ class Monitor(threading.Thread):
             a.occupied = False
             a.executing = False
         self.__print_monitor()
+        print("\n\nComputation ended in {0:.2f} minutes".format(((get_time() - started_time) / 1000) / 60))

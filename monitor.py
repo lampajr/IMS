@@ -105,4 +105,7 @@ class Monitor(threading.Thread):
             a.occupied = False
             a.executing = False
         self.__print_monitor()
-        print("\n\nComputation ended in {0:.2f} minutes".format(((get_time() - started_time) / 1000) / 60))
+        elapsed_time = get_time() - started_time
+        elapsed_minutes = int(((elapsed_time / 1000) / 60))
+        elapsed_seconds = (((elapsed_time / 1000) / 60) - elapsed_minutes) * 60
+        print("\n\nComputation ended in {} minutes and {} seconds".format(elapsed_minutes, int(elapsed_seconds)))

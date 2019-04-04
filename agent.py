@@ -13,7 +13,7 @@ class Agent(threading.Thread):
     """ Agent implementation """
 
     BASE_NAME = "Agent"
-    MAX_RANDOM_PROGRESS = 150
+    MAX_RANDOM_PROGRESS = 180
 
     def __init__(self,
                  name,
@@ -58,7 +58,6 @@ class Agent(threading.Thread):
         self.fail_duration = value
         self.__reset()
         self.logger.log(message="I'm failed!! :(")
-        #self.__unsubscribe()
         self.__update_subscribing()
 
     def repair(self):
@@ -68,7 +67,6 @@ class Agent(threading.Thread):
         if self.failed:
             self.failed = False
             self.__reset()
-            #self.__subscribe()
             self.__update_subscribing()
             self.logger.log(message="I'm back! :)")
 

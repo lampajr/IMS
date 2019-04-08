@@ -50,7 +50,7 @@ class Agent(threading.Thread):
                                                                                    top=self.topic.value))
         self.__subscribe()
 
-    def invalidate(self, value=4):
+    def invalidate(self, value=7):
 
         """ fail the current agent """
 

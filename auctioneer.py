@@ -215,6 +215,6 @@ class Auctioneer(threading.Thread):
         self.logger.log(message="I need to reallocate the {name} task since ".format(name=self.task.logger.name) + why)
 
         self.auction_id = self.auction_id + str(random.randint(0, MAX_ID))
-        self.failed_agents.append(self.winner)
+        #self.failed_agents.append(self.winner)
         if not self.task.terminated:
             self.allocate_task(task=self.task)

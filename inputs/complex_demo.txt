@@ -14,10 +14,10 @@ Cashier Thomas,handle_payments,5,100-80-50-0,true,false
 Cashier Melania,handle_payments,5,100-50-70-0,true,false
 Cashier John,handle_payments,5,100-60-90-0,true,false
 4
-ordering,100,serve,3,4,yellow,true,false,taking order-carbonara dish,700,cook,20,5,yellow,true,false,cooking carbonara dish-carbonara service,150,serve,5,3,yellow,true,false,serve carbonara dish-carbonara payment,100,handle_payments,4,3,yellow,true,false,receive payment for carbonara
-ordering,100,serve,3,4,red,true,false,taking order-pizza margherita,300,cook,17,5,red,true,false,cooking pizza margherita-pizza service,150,serve,5,3,red,true,false,serve pizza margherita dish-pizza margherita payment,100,handle_payments,4,3,red,true,false,receive payment for margherita
-ordering,100,serve,3,4,blue,true,false,taking order-grilled meat dish,600,cook,17,5,blue,true,false,cooking grilled meat-grilled meat service,150,serve,5,3,blue,true,false,serve grilled meat dish-grilled meat payment,100,handle_payments,4,3,blue,true,false,receive payment for grilled meat
-ordering,100,serve,3,4,cyan,true,false,taking order-hamburger,500,cook,17,5,cyan,true,false,cooking hamburger dish-hamburger service,150,serve,5,3,cyan,true,false,serve hamburger dish-hamburger payment,100,handle_payments,4,3,cyan,true,false,receive payment for hamburger
+carbonara ordering,100,serve,3,4,yellow,true,false,taking order-cook carbonara,700,cook,20,5,yellow,true,false,cooking carbonara dish-carbonara service,150,serve,5,3,yellow,true,false,serving carbonara dish-carbonara payment,100,handle_payments,4,3,yellow,true,false,receive payment for carbonara
+pizza ordering,100,serve,3,4,red,true,false,taking order-cook pizza margherita,300,cook,17,5,red,true,false,cooking pizza margherita-pizza service,150,serve,5,3,red,true,false,serving pizza margherita dish-pizza margherita payment,100,handle_payments,4,3,red,true,false,receive payment for margherita
+meat ordering,100,serve,3,4,blue,true,false,taking order-cook grilled meat,600,cook,17,5,blue,true,false,cooking grilled meat-grilled meat service,150,serve,5,3,blue,true,false,serving grilled meat dish-grilled meat payment,100,handle_payments,4,3,blue,true,false,receive payment for grilled meat
+hamburger ordering,100,serve,3,4,cyan,true,false,taking order-cook hamburger,500,cook,17,5,cyan,true,false,cooking hamburger dish-hamburger service,150,serve,5,3,cyan,true,false,serving hamburger dish-hamburger payment,100,handle_payments,4,3,cyan,true,false,receive payment for hamburger
 2
 1
 3

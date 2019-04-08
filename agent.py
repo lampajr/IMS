@@ -41,7 +41,8 @@ class Agent(threading.Thread):
         self.current_task = None
         self.current_auction = None
         self.last_renewal = None
-        self.start()
+        self.bid = None
+        self.run()
 
     def run(self):
         self.logger.log(message="I'm {name} with {id} id and {top} topic!!".format(name=self.logger.name,
@@ -54,6 +55,7 @@ class Agent(threading.Thread):
         """ fail the current agent """
 
         self.failed = True
+        self.occupied = False
         self.time_failed = get_time()
         self.fail_duration = value
         self.__reset()
@@ -85,13 +87,6 @@ class Agent(threading.Thread):
         # whenever you receive a message unsubscribe to the topic
         self.__unsubscribe()
 
-        # this means that the auctioneer has reallocated my task
-        # limit needs to be the same or greater wrt the contract limit of
-        # the auctioneer
-        #if self.executing and self.last_renewal is not None and ((get_time() - self.last_renewal) / 1000) > self.contract_time:
-        #    # invalidate myself for a while
-        #    self.invalidate()
-
         if not self.failed:
             if arg1.msg_type == MessageType.ANNOUNCEMENT:
                 if not self.occupied:
@@ -122,6 +117,7 @@ class Agent(threading.Thread):
         self.occupied = True
 
         fitness = self.current_task.metric(skill=self.skill)
+        self.bid = fitness
         # generate bid message
         bid_message = BidMessage(auction_id=self.current_auction,
                                  agent_id=self.agent_id,
@@ -181,6 +177,7 @@ class Agent(threading.Thread):
         self.executing = False
         self.last_renewal = None
         self.logger.color = None
+        self.bid = None
 
     def __subscribe(self):
         pub.subscribe(self.on_message_received, topicName=self.topic.value)

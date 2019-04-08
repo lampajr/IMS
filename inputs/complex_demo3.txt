@@ -1,10 +1,10 @@
 14
-Chef George,cook,5,100-100-100-5,true,false
-Chef Andrew,cook,5,100-100-90-3,true,false
-Chef Marco,cook,5,90-100-70-2,true,false
+Main chef George,cook,5,100-100-70-3,true,false
+Chef Marco,cook,5,100-100-70-3,true,false
 Chef Lucas,cook,5,100-100-60-2,true,false
-Chef Hilary,cook,5,100-100-50-1,true,false
-Chef Jeff,cook,5,100-100-85-0,true,false
+Chef Hilary,cook,5,100-100-75-1,true,false
+Chef Jeff,cook,5,100-100-85-2,true,false
+Chef Andrew,cook,5,100-100-95-3,true,false
 Waiter Benjamin,serve,5,100-80-80-0,true,false
 Waiter Peter,serve,5,100-85-75-0,true,false
 Waiter Bernard,serve,5,100-90-60-0,true,false
@@ -13,7 +13,8 @@ Waiter Mary,serve,5,100-65-85-0,true,false
 Cashier Thomas,handle_payments,5,100-80-50-0,true,false
 Cashier Melania,handle_payments,5,100-50-70-0,true,false
 Cashier John,handle_payments,5,100-60-90-0,true,false
-3
+4
+carbonara ordering,100,serve,3,4,yellow,true,false,taking order-cook carbonara,700,cook,15,5,yellow,true,false,cooking carbonara dish-carbonara service,150,serve,5,3,yellow,true,false,serving carbonara dish-carbonara payment,100,handle_payments,3,3,yellow,true,false,receive payment for carbonara
 pizza ordering,100,serve,3,4,red,true,false,taking order-cook pizza margherita,300,cook,15,5,red,true,false,cooking pizza margherita-pizza service,150,serve,5,3,red,true,false,serving pizza margherita dish-pizza margherita payment,100,handle_payments,3,3,red,true,false,receive payment for margherita
 meat ordering,100,serve,3,4,blue,true,false,taking order-cook grilled meat,600,cook,15,5,blue,true,false,cooking grilled meat-grilled meat service,150,serve,5,3,blue,true,false,serving grilled meat dish-grilled meat payment,100,handle_payments,3,3,blue,true,false,receive payment for grilled meat
 hamburger ordering,100,serve,3,4,cyan,true,false,taking order-cook hamburger,500,cook,15,5,cyan,true,false,cooking hamburger dish-hamburger service,150,serve,5,3,cyan,true,false,serving hamburger dish-hamburger payment,100,handle_payments,3,3,cyan,true,false,receive payment for hamburger

@@ -1,6 +1,6 @@
-from task import Task, CookTask, HandlePaymentTask, ServeTask
-from utility import *
 from agent import Agent
+from task import CookTask, HandlePaymentTask, ServeTask
+from utility import *
 
 
 class Loader:

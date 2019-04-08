@@ -49,6 +49,7 @@ class Auctioneer(threading.Thread):
         self.task_terminated = False
         self.topic = None
         self.last_renewal = None
+        self.wait = None
 
     def run(self):
         pub.subscribe(self.on_message_received, topicName=self.topic.value)
@@ -58,6 +59,9 @@ class Auctioneer(threading.Thread):
 
         """ methods called whenever a new message is received
             on the subscribed topic """
+
+        if self.wait is not None:
+            time.sleep(self.wait)
 
         # discard any message not related to this auction
         if arg1.auction_id != self.auction_id:

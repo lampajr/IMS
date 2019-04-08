@@ -64,7 +64,6 @@ class Monitor(threading.Thread):
         """ print the state of all the agents involved in the system
             and of all the tasks executed and that have to be executed """
 
-        # TODO: clear the terminal before printing the monitor
         if self.clear:
             clear()
         # Agents' monitor
@@ -74,7 +73,7 @@ class Monitor(threading.Thread):
         for a in self.agents:
             state = colored("executing", color="yellow") if a.executing else colored("occupied", color="blue") \
                 if a.occupied else colored("failed", color="red") if a.failed else colored("free", color="green")
-            description = a.current_task.logger.description if a.executing else "participating in auction: {}".format(a.current_task.logger.name ) if a.occupied else "empty"
+            description = a.current_task.logger.description if a.executing else "offering {} in {} auction".format(a.bid, a.current_task.logger.name) if a.occupied else "empty"
             line = "**{0: ^30s}**{1: ^39s}**{2: ^70s}**{3: ^30}**".format(a.logger.name,
                                                                           state,
                                                                           description,

@@ -1,7 +1,7 @@
 7
-Main chef George,cook,5,100-100-70-3,true,false
-Chef Marco,cook,5,100-100-70-3,true,false
+Chef George,cook,5,100-100-100-5,true,false
 Chef Lucas,cook,5,100-100-60-2,true,false
+Chef Jeff,cook,5,100-100-85-0,true,false
 Waiter Benjamin,serve,5,100-80-80-0,true,false
 Waiter Peter,serve,5,100-85-75-0,true,false
 Cashier Melania,handle_payments,5,100-50-70-0,true,false

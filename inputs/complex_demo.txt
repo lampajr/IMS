@@ -1,5 +1,5 @@
 14
-Chef George,cook,5,100-100-100-5,true,false
+Chef George,cook,5,100-100-100-4,true,false
 Chef Andrew,cook,5,100-100-90-3,true,false
 Chef Marco,cook,5,90-100-70-2,true,false
 Chef Lucas,cook,5,100-100-60-2,true,false

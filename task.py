@@ -118,7 +118,7 @@ class CookTask(Task):
 
         # linear combination among all abilities but cleverness
         deterministic_fitness = 0.8 * 20 * skill.stars + 0.4 * skill.energy + 0.1 * skill.speed
-        random_fitness = random.randint(0, 30)
+        random_fitness = random.randint(0, 50)
 
         return deterministic_fitness + random_fitness
 

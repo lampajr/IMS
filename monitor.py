@@ -4,7 +4,7 @@ import time
 from os import name, system
 from termcolor import cprint, colored
 
-from utility import get_topic_from_subjects, get_time
+from utility import get_topic_from_subjects, get_time, Topic
 
 
 def clear():
@@ -70,14 +70,24 @@ class Monitor(threading.Thread):
         print(self.border)
         print(self.header)
         print(self.border)
+        topic = Topic.COOK
         for a in self.agents:
+            if a.topic != topic:
+                topic = a.topic
+                print("**" + "-"*166 + "**")
             state = colored("executing", color="yellow") if a.executing else colored("occupied", color="blue") \
                 if a.occupied else colored("failed", color="red") if a.failed else colored("free", color="green")
-            description = a.current_task.logger.description if a.executing else "offering {} in {} auction".format(a.bid, a.current_task.logger.name) if a.occupied else "empty"
-            line = "**{0: ^30s}**{1: ^39s}**{2: ^70s}**{3: ^30}**".format(a.logger.name,
-                                                                          state,
-                                                                          description,
-                                                                          a.topic.value)
+            description = a.current_task.logger.description if a.executing else "offering " + colored(a.bid, "red") + " in {} auction".format(a.current_task.logger.name) if a.occupied else "empty"
+            if not a.executing and a.occupied:
+                line = "**{0: ^30s}**{1: ^39s}**{2: ^79s}**{3: ^30}**".format(a.logger.name,
+                                                                              state,
+                                                                              description,
+                                                                              a.topic.value)
+            else:
+                line = "**{0: ^30s}**{1: ^39s}**{2: ^70s}**{3: ^30}**".format(a.logger.name,
+                                                                              state,
+                                                                              description,
+                                                                              a.topic.value)
             cprint(line)
         print(self.border)
 

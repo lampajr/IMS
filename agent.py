@@ -13,7 +13,7 @@ class Agent(threading.Thread):
     """ Agent implementation """
 
     BASE_NAME = "Agent"
-    MAX_RANDOM_PROGRESS = 180
+    MAX_RANDOM_PROGRESS = 200
 
     def __init__(self,
                  name,

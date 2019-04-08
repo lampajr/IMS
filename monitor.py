@@ -104,7 +104,8 @@ class Monitor(threading.Thread):
         started_time = get_time()
         while not self.__check_termination():
             self.__print_monitor()
-            print("\n\n\n\n\n\n\n\n")
+            #print("\n\n\n\n\n\n\n\n")
+            print("")
             time.sleep(self.refresh_rate)
         for a in self.agents:
             a.occupied = False

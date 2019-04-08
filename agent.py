@@ -141,8 +141,6 @@ class Agent(threading.Thread):
             self.logger.log(message="I'm going to execute the task..")
             self.executing = True
             self.logger.color = self.current_task.logger.color
-            #self.__execute_task()
-
 
     def on_renewal(self, msg):
 
